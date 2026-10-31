@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Welcome</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<title>Type your own text</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Source+Serif+4:wght@400;600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f3f5f1;--surface:#fff;--ink:#1d2a24;--mute:#66736c;--line:#d6ddd7;--accent:#1f6f55;--ok:#1f6f55;--badbg:#f6d5d0;--bad:#b3261e;--curbg:#ffe9a8;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -39,21 +39,114 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff;fo
 #show .ok{color:var(--ok)}
 #show .bad{background:var(--badbg);color:var(--bad)}
 #show .cur{background:var(--curbg);box-shadow:-2px 0 0 var(--accent)}
-#inp{min-height:110px}
+#inp{min-height:130px;display:block}.tw{position:relative}#prev{position:absolute;inset:1px;padding:12px;overflow:hidden;pointer-events:none;display:flex;flex-direction:column;justify-content:flex-end;font-family:Mangal,"Noto Sans Devanagari",sans-serif;white-space:pre-wrap;word-break:break-word;line-height:1.5;color:var(--ink)}#prev.hide{display:none}
 .done{border-color:var(--accent);margin-bottom:12px}
-.krow{display:flex;gap:4px;justify-content:center;margin-top:10px}.krow:nth-child(2){padding-left:14px}.krow:nth-child(3){padding-left:28px}
+.krow{display:flex;gap:4px;justify-content:center;margin-top:10px}.krow:nth-child(2){padding-left:14px}.krow:nth-child(3){padding-left:28px}.krow:nth-child(4){padding-left:42px}.k{font-size:.9rem}
 .k{flex:1 1 0;max-width:54px;text-align:center;border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:2px 0;font-family:Mangal,"Noto Sans Devanagari",sans-serif;line-height:1.3}
 .k small{display:block;color:var(--mute);font-size:.8rem}.k b{display:block;font-weight:400}
 .k.nk{background:var(--curbg);border-color:var(--accent)}.k.nk.sh small{color:var(--ink);font-weight:700}
+#done:not(.hide){position:fixed;inset:0;margin:auto;height:fit-content;width:min(560px,calc(100% - 32px));z-index:50;box-shadow:0 0 0 100vmax rgba(0,0,0,.55);max-height:90vh;overflow:auto}
 .res{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}.res div{border:1px solid var(--line);border-radius:8px;padding:8px 10px}.res b{display:block;font-size:1.3rem}.res span{color:var(--mute);font-size:.85rem}
 .hide{display:none}
 .msg{color:var(--bad);margin-top:8px}
+/* aesthetic theme */
+:root{--bg:#f6f2ff;--solid:#fff;--bgimg:radial-gradient(900px 520px at 8% -8%,#ffd3ef 0%,transparent 60%),radial-gradient(800px 520px at 100% 0%,#cfdcff 0%,transparent 55%),radial-gradient(900px 600px at 50% 112%,#c6f6ec 0%,transparent 55%),#faf7ff;--surface:rgba(255,255,255,.72);--ink:#2a1f3d;--mute:#6b6384;--line:rgba(124,92,255,.22);--accent:#7c5cff;--ok:#0f9d7a;--bad:#e11d48;--badbg:#ffe0e8;--curbg:#ffe59a;--c1:#7c5cff;--c2:#0f9d7a;--c3:#e11d48;--c4:#d97706;--glow:rgba(124,92,255,.2)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#150f33;--solid:#1d1745;--bgimg:radial-gradient(900px 520px at 8% -8%,#4a1d6e 0%,transparent 60%),radial-gradient(800px 520px at 100% 0%,#1b2f6e 0%,transparent 55%),radial-gradient(900px 600px at 50% 112%,#0d4a4f 0%,transparent 55%),#0e0a26;--surface:rgba(34,26,72,.62);--ink:#f1ecff;--mute:#a9a1cc;--line:rgba(167,139,250,.28);--accent:#a78bfa;--ok:#5eead4;--bad:#fda4af;--badbg:rgba(244,63,94,.3);--curbg:rgba(250,204,21,.3);--c1:#b8a2ff;--c2:#5eead4;--c3:#fda4af;--c4:#fcd34d;--glow:rgba(167,139,250,.25)}}
+:root[data-theme=dark]{--bg:#150f33;--solid:#1d1745;--bgimg:radial-gradient(900px 520px at 8% -8%,#4a1d6e 0%,transparent 60%),radial-gradient(800px 520px at 100% 0%,#1b2f6e 0%,transparent 55%),radial-gradient(900px 600px at 50% 112%,#0d4a4f 0%,transparent 55%),#0e0a26;--surface:rgba(34,26,72,.62);--ink:#f1ecff;--mute:#a9a1cc;--line:rgba(167,139,250,.28);--accent:#a78bfa;--ok:#5eead4;--bad:#fda4af;--badbg:rgba(244,63,94,.3);--curbg:rgba(250,204,21,.3);--c1:#b8a2ff;--c2:#5eead4;--c3:#fda4af;--c4:#fcd34d;--glow:rgba(167,139,250,.25)}
+body{background:var(--bgimg) fixed;min-height:100vh}
+h1{font-size:2.1rem;letter-spacing:-.5px;display:inline-block;background:linear-gradient(90deg,#7c5cff,#ec4899 55%,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card,.stat{background:var(--surface);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 32px var(--glow)}
+.stat b{font-size:1.7rem}
+.stat:nth-child(1) b{color:var(--c1)}.stat:nth-child(2) b{color:var(--c2)}.stat:nth-child(3) b{color:var(--c3)}.stat:nth-child(4) b{color:var(--c4)}
+.stat{border-top:3px solid var(--accent)}.stat:nth-child(2){border-top-color:var(--c2)}.stat:nth-child(3){border-top-color:var(--c3)}.stat:nth-child(4){border-top-color:var(--c4)}
+textarea{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--glow);outline:none}
+button,select,.file{border-radius:999px;background:var(--surface);border:1px solid var(--line);transition:transform .15s,box-shadow .15s}
+button:hover,.file:hover{transform:translateY(-2px);box-shadow:0 8px 18px var(--glow)}
+:root:root:root button.primary{background:linear-gradient(135deg,#7c5cff,#ec4899);border:0;color:#fff;box-shadow:0 8px 20px rgba(236,72,153,.3)}
+#pause{border-color:var(--c4)}
+.bar{height:9px;border-radius:99px;background:var(--line)}
+.bar i{border-radius:99px;background:linear-gradient(90deg,#7c5cff,#ec4899,#f59e0b)}
+#show .cur{background:var(--curbg);border-radius:5px;box-shadow:0 3px 0 var(--accent)}
+#show .bad{border-radius:5px}
+.k{background:var(--surface);border-radius:8px;border:1px solid var(--line)}
+.k.nk{background:linear-gradient(135deg,#ffd86b,#ff9ad5);border-color:transparent;box-shadow:0 4px 12px rgba(255,154,213,.5)}
+.k.nk small,.k.nk b{color:#2a1f3d}
+#done:not(.hide){background:var(--solid);border-radius:20px}
+.res div{background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(236,72,153,.12));border:1px solid var(--line);border-radius:12px}
+.res div:nth-child(1) b{color:var(--c1)}.res div:nth-child(3) b{color:var(--c2)}.res div:nth-child(4) b{color:var(--c3)}
+.sub{color:var(--mute)}
+.hbars{display:flex;align-items:flex-end;gap:4px;height:70px;margin:10px 0}.hbars i{flex:1;min-width:6px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#ec4899,#7c5cff)}
+#hist table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:8px}#hist th,#hist td{padding:5px 8px;text-align:left;border-bottom:1px solid var(--line)}#hist th{color:var(--mute);font-weight:600}
+.rev{max-height:150px;overflow:auto;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:12px;font-family:Mangal,"Noto Sans Devanagari",sans-serif;line-height:1.9;white-space:pre-wrap}
+.w-f{background:var(--badbg);color:var(--bad);border-radius:4px;padding:0 2px}.w-h{background:rgba(79,140,255,.22);color:#4f8cff;border-radius:4px;padding:0 2px}
+.lg{font-size:.8rem;color:var(--mute);margin-top:6px}
+.k.sp{flex:0 1 340px;max-width:340px;padding:6px 0}.k.nk.sh{outline:2px dashed var(--accent);outline-offset:1px}
+/* premium theme */
+:root{--bg:#fbf8f1;--solid:#fffdf8;--bgimg:radial-gradient(1100px 560px at 50% -12%,rgba(212,175,55,.22),transparent 62%),radial-gradient(900px 520px at 100% 100%,rgba(120,100,200,.10),transparent 60%),#fbf8f1;--surface:rgba(255,255,255,.72);--hi:rgba(255,255,255,.8);--field:rgba(255,255,255,.92);--ink:#1c1a14;--mute:#7a7466;--line:rgba(150,115,20,.26);--accent:#a67c1a;--gold:#a67c1a;--ok:#177a56;--bad:#c2263c;--badbg:#fde4e8;--curbg:#f6e4a8;--c1:#8a6510;--c2:#177a56;--c3:#c2263c;--c4:#5b47b8;--glow:rgba(166,124,26,.2);--shadow:0 26px 50px -30px rgba(120,90,20,.4)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b0b11;--solid:#14141d;--bgimg:radial-gradient(1200px 620px at 50% -14%,rgba(212,175,55,.16),transparent 62%),radial-gradient(900px 520px at 100% 100%,rgba(90,70,170,.2),transparent 60%),radial-gradient(700px 400px at 0% 90%,rgba(212,175,55,.06),transparent 60%),#0b0b11;--surface:rgba(255,255,255,.04);--hi:rgba(255,255,255,.05);--field:rgba(0,0,0,.38);--ink:#f4efe3;--mute:#9b97a8;--line:rgba(212,175,55,.22);--accent:#d4af37;--gold:#d4af37;--ok:#7fe0b4;--bad:#ff8a95;--badbg:rgba(255,90,110,.18);--curbg:rgba(212,175,55,.24);--c1:#f3dc9b;--c2:#7fe0b4;--c3:#ff8a95;--c4:#b9a6ff;--glow:rgba(212,175,55,.18);--shadow:0 30px 60px -34px rgba(0,0,0,.85)}}
+:root[data-theme=dark]{--bg:#0b0b11;--solid:#14141d;--bgimg:radial-gradient(1200px 620px at 50% -14%,rgba(212,175,55,.16),transparent 62%),radial-gradient(900px 520px at 100% 100%,rgba(90,70,170,.2),transparent 60%),#0b0b11;--surface:rgba(255,255,255,.04);--hi:rgba(255,255,255,.05);--field:rgba(0,0,0,.38);--ink:#f4efe3;--mute:#9b97a8;--line:rgba(212,175,55,.22);--accent:#d4af37;--gold:#d4af37;--ok:#7fe0b4;--bad:#ff8a95;--badbg:rgba(255,90,110,.18);--curbg:rgba(212,175,55,.24);--c1:#f3dc9b;--c2:#7fe0b4;--c3:#ff8a95;--c4:#b9a6ff;--glow:rgba(212,175,55,.18);--shadow:0 30px 60px -34px rgba(0,0,0,.85)}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+body{font-family:Inter,"Noto Sans Devanagari",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main{max-width:920px;padding:44px 20px 64px}
+.eyebrow{font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:12px;font-weight:500}
+.eyebrow::before{content:"";width:36px;height:1px;background:var(--gold)}
+h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:clamp(2.5rem,7vw,3.9rem);line-height:1.04;letter-spacing:-.01em;margin:12px 0 10px;background:linear-gradient(100deg,var(--ink) 15%,var(--gold) 55%,var(--ink) 92%);-webkit-background-clip:text;background-clip:text;color:transparent}
+p.sub{max-width:58ch;font-size:.95rem;line-height:1.7;margin-bottom:28px}
+.card{background-color:var(--surface);background-image:linear-gradient(180deg,var(--hi),transparent 60%);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:inset 0 1px 0 var(--hi),var(--shadow);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2)}
+label.l{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:10px}
+textarea{font-family:Inter,Mangal,"Noto Sans Devanagari",sans-serif;background:var(--field);border:1px solid var(--line);border-radius:16px;padding:16px 18px;line-height:1.7}
+textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px var(--glow)}
+#show,#inp,#prev,.rev,.k{font-family:Inter,Mangal,"Noto Sans Devanagari",sans-serif}
+button,select,.file{font-family:Inter,sans-serif;font-size:.82rem;font-weight:500;letter-spacing:.03em;padding:10px 20px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px}
+button:hover,.file:hover{border-color:var(--gold);box-shadow:0 12px 26px -12px var(--glow);transform:translateY(-1px)}
+:root:root:root:root button.primary{background:linear-gradient(135deg,#f6e4a6 0%,#d4af37 48%,#9a7413 100%);color:#1b1405;border:0;font-weight:600;letter-spacing:.05em;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 14px 30px -12px rgba(212,175,55,.7)}
+button.primary:hover{filter:brightness(1.07)}
+select{-webkit-appearance:none;appearance:none;padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23d4af37' stroke-width='1.6'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center}
+option{background:var(--solid);color:var(--ink)}
+.chk{font-size:.8rem;letter-spacing:.03em;gap:10px}
+.row{gap:12px;margin-top:16px}
+.stats{gap:14px;margin-bottom:18px}
+.stat,.stat:nth-child(n){position:relative;overflow:hidden;padding:16px 20px;border-radius:18px;border-top:1px solid var(--line)}
+.stat::before{content:"";position:absolute;left:20px;right:20px;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.stat b{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.5rem;font-weight:600;line-height:1;color:var(--ink)!important}
+.stat:first-child b{color:var(--gold)!important}
+.stat span{font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.bar{height:3px;background:var(--line);margin-bottom:18px}
+.bar i{background:linear-gradient(90deg,#8a6510,#f3dc9b,#d4af37);box-shadow:0 0 14px rgba(212,175,55,.6)}
+#show{padding:26px 28px;line-height:2.15;letter-spacing:.01em;max-height:300px}
+#show .pend{color:var(--mute)}
+#show .ok{color:var(--ok)}
+#show .bad{background:var(--badbg);color:var(--bad);border-radius:6px}
+#show .cur{background:var(--curbg);color:var(--ink);border-radius:4px;box-shadow:0 2px 0 var(--gold)}
+#inp{min-height:140px}
+.krow{gap:6px;margin-top:8px}
+.k{border-radius:9px;padding:5px 0;background:linear-gradient(180deg,var(--hi),transparent),var(--surface);border:1px solid var(--line);box-shadow:0 3px 0 rgba(0,0,0,.28),inset 0 1px 0 var(--hi)}
+.k.nk{background:linear-gradient(180deg,#f6e4a6,#d4af37);border-color:transparent;box-shadow:0 0 0 1px rgba(255,255,255,.2),0 8px 26px rgba(212,175,55,.55),0 3px 0 #8a6510}
+.k.nk small,.k.nk b{color:#1b1405}
+#done:not(.hide){border-radius:26px;padding:28px;background:var(--solid);border:1px solid var(--gold);box-shadow:0 0 0 100vmax rgba(4,4,9,.74),0 40px 80px -20px rgba(0,0,0,.8),0 0 70px -20px var(--glow)}
+#done>b{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.7rem;font-weight:600;color:var(--gold)}
+.res div{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.res b{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.9rem;font-weight:600;line-height:1.1}
+.res span{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase}
+.rev{border-radius:16px;background:var(--field)}
+.hbars i{background:linear-gradient(180deg,#f3dc9b,#9a7413)}
+#hist th{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.foot{text-align:center;margin-top:38px;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+@media (prefers-reduced-motion:no-preference){main>*{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}@keyframes rise{from{opacity:0;transform:translateY(14px)}}}
+.foot a{color:inherit;text-decoration:none;margin:0 12px}.foot a:hover{color:var(--gold)}
+.adslot{margin-top:20px;min-height:90px;text-align:center}.adslot:empty{display:none}.adslot::before{content:"Advertisement";display:block;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+#info{margin-top:44px;max-width:760px}#info h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.6rem;color:var(--gold);margin:30px 0 6px;font-weight:600}#info p,#info li{color:var(--mute);line-height:1.75}#info a{color:var(--gold)}#info details{border-bottom:1px solid var(--line);padding:12px 0}#info summary{cursor:pointer;font-weight:500;color:var(--ink)}#info details p{margin:8px 0 0}
 </style>
+<!-- ADSENSE: after AdSense gives you your code, paste the <script async src="...adsbygoogle.js?client=ca-pub-..."> line here (same on every page) -->
+<meta name="description" content="Free Hindi and English typing practice with Mangal Remington Gail keys, exam-style scoring and progress tracking.">
 </head>
 <body>
 <main>
+<div class="eyebrow">Typing studio &middot; हिंदी &amp; English</div>
 <h1>Type your own text</h1>
-<p class="sub">Paste text or upload a .txt file, then type it. Works for Hindi and English.</p>
+<p class="sub">Bring any passage, then practise with exam-style scoring, Mangal Remington keys and a full progress record.</p>
 
 <section id="setup" class="card">
   <label class="l" for="src">Your text</label>
@@ -74,10 +167,18 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff;fo
     <label class="chk">Timer
       <select id="tm"><option value="0">No timer</option><option value="5">5 min</option><option value="10" selected>10 min</option><option value="15">15 min</option><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">1 hour</option><option value="c">Custom…</option></select>
     </label>
+    <label class="chk">Mode
+      <select id="mode"><option value="practice">Practice (live marks, backspace on)</option><option value="exam">Exam (no backspace, no live marks)</option></select>
+    </label>
+    <label class="chk">Scoring
+      <select id="sc"><option value="cpct">CPCT: full + half &divide; 2</option><option value="ig">Same, with 5% mistakes ignored</option></select>
+    </label>
     <label class="chk hide" id="tcw"><input type="number" id="tc" min="5" max="60" value="25" style="width:72px;font:inherit;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)"> minutes (5 to 60)</label>
     <button id="start" class="primary" type="button">Start typing</button>
   </div>
   <div id="msg" class="msg"></div>
+  <div id="hist"></div>
+  <div class="adslot"><!-- AD SLOT: paste your AdSense ad unit (the <ins class="adsbygoogle"> block) here after approval --></div>
 </section>
 
 <section id="play" class="hide">
@@ -90,14 +191,35 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff;fo
   <div class="bar"><i id="prog"></i></div>
   <div id="done" class="card done hide"></div>
   <div id="show" class="card" aria-label="Text to type"></div>
-  <textarea id="inp" placeholder="Start typing here. The timer begins with your first key." autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+  <div class="tw"><textarea id="inp" placeholder="Start typing here. The timer begins with your first key." autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div id="prev" class="hide" aria-label="What you typed"></div></div>
   <div id="kbd" class="hide"></div>
   <div class="row">
+    <button id="lang" type="button" class="hide">Keys: हिंदी</button>
+    <button id="pause" type="button">Pause</button>
     <button id="restart" type="button">Restart</button>
     <button id="back" type="button">Change text</button>
+    <button id="submit" class="primary" type="button">Submit</button>
   </div>
-  <p class="sub" style="margin-top:14px"><span id="kbnote"></span> Backspace corrects mistakes.</p>
+  <p class="sub" style="margin-top:14px"><span id="kbnote"></span> <span id="bsnote"></span></p>
 </section>
+<section id="info">
+<h2>Free Hindi and English typing practice</h2>
+<p>Typing Studio is a free typing practice tool where you choose the text. Paste a passage or upload a .txt file, pick a timer and start typing. It supports Hindi with the Mangal font and the Remington Gail layout, plus English, and it scores your work the way many exam typing tests do: by words, with full and half mistakes.</p>
+<h2>How it works</h2>
+<ol><li><b>Add your text.</b> Paste it, upload a .txt file, or choose one of our <a href="passages.html">practice passages</a>.</li>
+<li><b>Choose your settings.</b> Pick practice mode or exam mode, a timer from 5 minutes to 1 hour, and your scoring rule.</li>
+<li><b>Type and review.</b> Follow the highlighted key on the on-screen keyboard. When you finish, you get your net and gross speed, accuracy, full and half mistakes, and a coloured review of your typed text.</li></ol>
+<h2>Why practise with your own text?</h2>
+<p>Random words build finger speed, but exams use real passages with punctuation, names and longer sentences. Practising the kind of text you will face, such as news, official letters or general essays, builds the vocabulary and rhythm you need. It also lets you practise the exact paragraphs given by your teacher or coaching class.</p>
+<h2>Frequently asked questions</h2>
+<details><summary>Is it free?</summary><p>Yes. There is no sign-up and no limit on practice.</p></details>
+<details><summary>Do I need a Hindi keyboard?</summary><p>No. For Hindi text the page maps your English keys to the Remington Gail layout automatically.</p></details>
+<details><summary>How is my speed calculated?</summary><p>Net speed = (keystrokes &divide; 5 &minus; total mistakes) &divide; minutes, where total mistakes = full mistakes + half mistakes &divide; 2.</p></details>
+<details><summary>Is my text uploaded anywhere?</summary><p>No. Your text and results stay in your browser.</p></details>
+<details><summary>What is exam mode?</summary><p>Exam mode turns off backspace and live marks and shows your result only at the end, like a real typing test.</p></details>
+<p>More: <a href="faq.html">full FAQ</a> &middot; <a href="articles.html">typing articles</a> &middot; <a href="guide.html">Hindi typing guide</a> &middot; <a href="passages.html">practice passages</a></p>
+</section>
+<p class="foot"><a href="articles.html">Articles</a><a href="passages.html">Passages</a><a href="guide.html">Guide</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
 </main>
 <script>
 const $=id=>document.getElementById(id);
@@ -105,7 +227,7 @@ const SAMPLES={
 en:"The quick brown fox jumps over the lazy dog. Regular practice builds speed, and accuracy matters more than speed in the beginning. Keep your eyes on the text and let your fingers find the keys.",
 hi:"भारत एक विशाल और विविधताओं से भरा देश है। यहाँ अनेक भाषाएँ बोली जाती हैं और हर क्षेत्र की अपनी संस्कृति है। नियमित अभ्यास से टाइपिंग की गति और शुद्धता दोनों बढ़ती हैं।"
 };
-let useRem=false,B=[],limit=0,finalEl=0,T=[],start=0,timer=null,prevLen=0,keys=0,errs=0,finished=false,composing=false;
+let kbEn=false,exam=false,bsCount=0,pausedAt=0,composed=false,useRem=false,useVis=false,P=[],V=[],B=[],limit=0,finalEl=0,T=[],start=0,timer=null,prevLen=0,keys=0,errs=0,finished=false,composing=false;
 
 $('tm').onchange=()=>$('tcw').classList.toggle('hide',$('tm').value!=='c');
 $('sEn').onclick=()=>$('src').value=SAMPLES.en;
@@ -122,24 +244,40 @@ $('start').onclick=()=>{
   t=$('keepNl').checked ? t.split('\n').map(l=>l.replace(/[ \t]+/g,' ').trim()).join('\n').replace(/\n{2,}/g,'\n') : t.replace(/\s+/g,' ');
   t=t.trim();
   if(!t){$('msg').textContent='Add some text first: paste it or upload a .txt file.';return}
+  if(new RegExp('(^|[^क-हक़-य़़])ि').test(t))t=toLog(t);
   T=Array.from(t);B=T.slice();
   let m=$('tm').value;m=m==='c'?parseInt($('tc').value,10):parseInt(m,10);
   if($('tm').value==='c'&&!(m>=5&&m<=60)){$('msg').textContent='Enter a custom time between 5 and 60 minutes.';return}
   limit=(m||0)*60;$('tlab').textContent=limit?'Time left':'Time';
   useRem=$('kb').value==='rem'||($('kb').value==='auto'&&/[\u0900-\u097F]/.test(t));
-  $('kbd').classList.toggle('hide',!useRem);
+  useVis=useRem;$('kbd').classList.toggle('hide',!useRem);$('prev').classList.toggle('hide',!useVis);$('inp').style.color=useVis?'transparent':'';$('inp').style.caretColor=useVis?'transparent':'';
   $('kbnote').textContent=useRem?'Remington (Gail) layout is on. Type with your normal keyboard; keys are mapped to Hindi automatically. The highlighted key is the next one.':'Using your device keyboard. For Hindi, switch to a Hindi keyboard in your device settings.';
+  exam=$('mode').value==='exam';kbEn=!useRem;$('kbd').classList.toggle('hide',exam);$('lang').classList.toggle('hide',!useRem);setLang(kbEn,true);
+  $('kbnote').textContent=(useRem?'Remington (Gail) layout is on: your normal keys are mapped to Hindi. Click Keys or press Ctrl+Space to switch to English. ':'English keyboard. ')+'The highlighted key is next; a dashed outline means hold Shift.';$('pause').classList.toggle('hide',exam);$('bsnote').textContent=exam?'Exam mode: backspace is disabled and your mistakes are shown only at the end.':'Backspace corrects mistakes.';
   const fs=$('size').value+'rem';
-  $('show').style.fontSize=fs;$('inp').style.fontSize=fs;
-  $('setup').classList.add('hide');$('play').classList.remove('hide');
+  $('show').style.fontSize=fs;$('inp').style.fontSize=fs;$('prev').style.fontSize=fs;
+  $('setup').classList.add('hide');$('info').classList.add('hide');$('play').classList.remove('hide');
   reset();
 };
-$('back').onclick=()=>{clearInterval(timer);$('play').classList.add('hide');$('setup').classList.remove('hide')};
+$('back').onclick=()=>{clearInterval(timer);$('play').classList.add('hide');$('setup').classList.remove('hide');$('info').classList.remove('hide');drawHist()};
 $('restart').onclick=reset;
+$('lang').onclick=()=>setLang(!kbEn);
+$('pause').onclick=()=>{
+  const b=$('pause'),i=$('inp');
+  if(finished)return;
+  if(!start){b.textContent='Start typing first';setTimeout(()=>b.textContent='Pause',2000);return}
+  if(pausedAt){start+=Date.now()-pausedAt;pausedAt=0;timer=setInterval(stats,250);i.disabled=false;i.focus();b.textContent='Pause'}
+  else{pausedAt=Date.now();clearInterval(timer);i.disabled=true;b.textContent='Resume'}
+};
+$('submit').onclick=()=>{
+  if(finished)return;
+  if(!start){const b=$('submit');b.textContent='Type something first';setTimeout(()=>b.textContent='Submit',2000);return}
+  finish();
+};
 $('show').onclick=()=>$('inp').focus();
 
 function reset(){
-  clearInterval(timer);timer=null;start=0;prevLen=0;keys=0;errs=0;finished=false;T=B.slice();finalEl=0;
+  clearInterval(timer);timer=null;start=0;prevLen=0;keys=0;errs=0;finished=false;T=B.slice();finalEl=0;pausedAt=0;bsCount=0;$('pause').textContent='Pause';prep();$('prev').textContent='';
   const i=$('inp');i.value='';i.disabled=false;
   $('done').classList.add('hide');
   render();stats();i.focus();
@@ -147,11 +285,14 @@ function reset(){
 function render(){
   const typed=Array.from($('inp').value);
   let h='';
+  let st=[],cu=typed.length;
+  if(useVis){for(let v=0;v<typed.length&&v<P.length;v++)st[P[v]]=typed[v]===V[v]?'ok':(pend(v,typed)?'cur':'bad');cu=P[typed.length]}
   const s0=T.length>2000?Math.max(0,typed.length-150):0,e0=T.length>2000?Math.min(T.length,s0+900):T.length;
   for(let i=s0;i<e0;i++){
     const c=T[i]==='\n'?'↵\n':T[i].replace(/&/g,'&amp;').replace(/</g,'&lt;');
     let cls='pend';
-    if(i<typed.length) cls=typed[i]===T[i]?'ok':'bad';
+    if(exam) cls=(i===cu?'cur':'pend'); else if(useVis) cls=st[i]||(i===cu?'cur':'pend');
+    else if(i<typed.length) cls=typed[i]===T[i]?'ok':(pend(i,typed)?'cur':'bad');
     else if(i===typed.length) cls='cur';
     h+='<span class="'+cls+'">'+c+'</span>';
   }
@@ -161,11 +302,11 @@ function render(){
 }
 function correctCount(){
   const typed=Array.from($('inp').value);let n=0;
-  for(let i=0;i<typed.length&&i<T.length;i++) if(typed[i]===T[i]) n++;
+  const X=useVis?V:T;for(let i=0;i<typed.length&&i<T.length;i++) if(typed[i]===X[i]) n++;
   return n;
 }
 function stats(){
-  let el=finished?finalEl:(start?(Date.now()-start)/1000:0);
+  let el=finished?finalEl:(start?((pausedAt||Date.now())-start)/1000:0);
   if(limit&&el>limit)el=limit;
   if(limit&&start&&!finished&&el>=limit){finish();return}
   const mins=el/60;
@@ -173,6 +314,7 @@ function stats(){
   $('wpm').textContent=mins>0.02?Math.round((ok/5)/mins):0;
   $('acc').textContent=keys?Math.max(0,Math.round(100*(keys-errs)/keys))+'%':'100%';
   $('err').textContent=errs;
+  if(exam&&!finished){$('wpm').textContent=$('acc').textContent=$('err').textContent='–'}
   const s=limit?Math.ceil(limit-el):Math.floor(el);$('time').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
   $('prog').style.width=(limit?100*el/limit:100*Array.from($('inp').value).length/T.length)+'%';
 }
@@ -180,43 +322,128 @@ function onInput(){
   if(composing||finished) return;
   const i=$('inp');
   let typed=Array.from(i.value);
-  if(limit)while(T.length<=typed.length+400)T=T.concat(/\s/.test(T[T.length-1])?[]:[' '],B);
+  if(limit&&T.length<=typed.length+400){while(T.length<=typed.length+400)T=T.concat(/\s/.test(T[T.length-1])?[]:[' '],B);prep()}
   if(typed.length>T.length){typed=typed.slice(0,T.length);i.value=typed.join('')}
   if(!start&&typed.length){start=Date.now();timer=setInterval(stats,250)}
-  for(let k=prevLen;k<typed.length;k++){keys++;if(typed[k]!==T[k])errs++}
-  prevLen=typed.length;
+  const X=useVis?V:T;for(let k=prevLen;k<typed.length;k++){keys++;if(typed[k]!==X[k]&&!pend(k,typed))errs++}
+  if(composed){composed=false;const k=typed.length-1;keys++;if(k>=0&&typed[k]!==X[k]&&!pend(k,typed))errs++}
+  prevLen=typed.length;if(useVis)$('prev').textContent=toLog(i.value).slice(-250);
   render();stats();
-  if(typed.length===T.length) finish();
+  if(typed.length===T.length&&!pend(typed.length-1,typed)) finish();
+}
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function wsplit(x){return x.split(/\s+/).filter(Boolean)}
+function lev(a,b){const A=Array.from(a),C=Array.from(b);let p=Array.from({length:C.length+1},(_,i)=>i);for(let i=1;i<=A.length;i++){const c=[i];for(let j=1;j<=C.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(A[i-1]===C[j-1]?0:1));p=c}return p[C.length]}
+function simCost(r,t){if(r===t)return 0;if(r.toLowerCase()===t.toLowerCase())return .5;const L=Array.from(r).length;return L>=3&&lev(r,t)<=Math.max(1,Math.floor(L/3))?.5:1}
+function align(R,Tw){
+  const n=R.length,m=Tw.length,W=m+1,D=new Float32Array((n+1)*W),Z=new Uint8Array((n+1)*W);
+  for(let i=1;i<=n;i++){D[i*W]=i;Z[i*W]=2}
+  for(let j=1;j<=m;j++){D[j]=j;Z[j]=3}
+  for(let i=1;i<=n;i++)for(let j=1;j<=m;j++){
+    let b=D[(i-1)*W+j-1]+simCost(R[i-1],Tw[j-1]),z=1;
+    const o=D[(i-1)*W+j]+1;if(o<b){b=o;z=2}
+    const a=D[i*W+j-1]+1;if(a<b){b=a;z=3}
+    if(i>1&&R[i-2]+R[i-1]===Tw[j-1]){const c=D[(i-2)*W+j-1]+.5;if(c<b){b=c;z=4}}
+    if(j>1&&R[i-1]===Tw[j-2]+Tw[j-1]){const c=D[i*W+j-2]+.5;if(c<b){b=c;z=5}}
+    D[i*W+j]=b;Z[i*W+j]=z;
+  }
+  let i=0,bv=1e9;for(let k=0;k<=n;k++){const v=D[k*W+m];if(v<=bv){bv=v;i=k}}
+  const mk=new Array(m).fill('ok');let full=0,half=0,om=0,ad=0,j=m;
+  while(i>0||j>0){
+    const z=Z[i*W+j];
+    if(z===1){const c=simCost(R[i-1],Tw[j-1]);if(c===1){mk[j-1]='f';full++}else if(c===.5){mk[j-1]='h';half++}i--;j--}
+    else if(z===2){full++;om++;i--}
+    else if(z===3){mk[j-1]='f';full++;ad++;j--}
+    else if(z===4){mk[j-1]='h';half++;i-=2;j--}
+    else{mk[j-1]='h';mk[j-2]='h';half++;i--;j-=2}
+  }
+  return{mk,full,half,om,ad}
+}
+function loadH(){try{return JSON.parse(localStorage.getItem('typing-hist')||'[]')}catch(e){return[]}}
+function saveH(r){try{const h=loadH();h.push(r);localStorage.setItem('typing-hist',JSON.stringify(h.slice(-200)))}catch(e){}}
+function drawHist(){
+  const h=loadH(),el=$('hist');
+  if(!h.length){el.innerHTML='';return}
+  const last=h.slice(-20),mx=Math.max(...last.map(r=>r.net),1),best=Math.max(...h.map(r=>r.net)),avg=Math.round(h.reduce((x,r)=>x+r.net,0)/h.length);
+  const fm=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0');
+  el.innerHTML='<hr style="border:0;border-top:1px solid var(--line);margin:16px 0 10px"><b>Your progress</b><div class="lg">'+h.length+' tests &middot; best '+best+' WPM &middot; average '+avg+' WPM &middot; last 20 net speeds:</div><div class="hbars">'+last.map(r=>'<i title="'+r.net+' WPM" style="height:'+Math.max(6,100*r.net/mx)+'%"></i>').join('')+'</div><table><tr><th>When</th><th>Mode</th><th>Net</th><th>Accuracy</th><th>Full/Half</th><th>Time</th></tr>'+h.slice(-8).reverse().map(r=>'<tr><td>'+new Date(r.t).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</td><td>'+(r.ex?'Exam':'Practice')+'</td><td>'+r.net+'</td><td>'+r.acc+'%</td><td>'+r.f+' / '+r.h+'</td><td>'+fm(r.s)+'</td></tr>').join('')+'</table><div class="row"><button id="hClear" type="button">Clear history</button></div>';
+  $('hClear').onclick=()=>{const b=$('hClear');if(b.dataset.s){try{localStorage.removeItem('typing-hist')}catch(e){}drawHist()}else{b.dataset.s=1;b.textContent='Click again to confirm'}};
 }
 function finish(){
-  finished=true;clearInterval(timer);finalEl=Math.min(start?(Date.now()-start)/1000:0,limit||1e9);stats();
+  finished=true;clearInterval(timer);finalEl=Math.min(start?((pausedAt||Date.now())-start)/1000:0,limit||1e9);stats();
   $('inp').disabled=true;
-  const d=$('done');
-  const n=Array.from($('inp').value).length,ok=correctCount(),mn=Math.max(finalEl,1)/60;
-  const fm=x=>Math.floor(x/60)+':'+String(Math.floor(x%60)).padStart(2,'0');
-  d.innerHTML='<b>'+(limit&&finalEl>=limit?'Time’s up.':'Finished.')+'</b> Your result:<div class="res">'+[['Net speed',Math.round(ok/5/mn)+' WPM'],['Gross speed',Math.round(n/5/mn)+' WPM'],['Accuracy',(keys?Math.max(0,Math.round(1000*(keys-errs)/keys)/10):100)+'%'],['Mistakes made',errs],['Left uncorrected',n-ok],['Characters typed',n],['Time',fm(finalEl)]].map(r=>'<div><b>'+r[1]+'</b><span>'+r[0]+'</span></div>').join('')+'</div>';
-  d.scrollIntoView({block:'nearest'});
+  const d=$('done'),raw=$('inp').value,typedLog=useVis?toLog(raw):raw;
+  const tw=wsplit(typedLog),m=tw.length,RW=wsplit(T.join('')).slice(0,m+Math.ceil(m*.25)+10);
+  const a=m?align(RW,tw):{mk:[],full:0,half:0,om:0,ad:0};
+  const total=a.full+a.half/2,net=Math.max(0,total-($('sc').value==='ig'?.05*m:0));
+  const mn=Math.max(finalEl,1)/60,gross=keys/5/mn,netW=Math.max(0,keys/5-net)/mn,acc=m?Math.max(0,100-100*net/m):100;
+  const fm=x=>Math.floor(x/60)+':'+String(Math.floor(x%60)).padStart(2,'0'),f1=x=>Number.isInteger(x)?x:x.toFixed(1);
+  const rv=tw.map((w,j)=>a.mk[j]==='f'?'<span class="w-f">'+esc(w)+'</span>':a.mk[j]==='h'?'<span class="w-h">'+esc(w)+'</span>':esc(w)).join(' ');
+  d.innerHTML='<b>'+(limit&&finalEl>=limit?'Time’s up.':'Submitted.')+'</b> Your result:<div class="res">'+[['Net speed',Math.round(netW)+' WPM'],['Gross speed',Math.round(gross)+' WPM'],['Accuracy',acc.toFixed(1)+'%'],['Full mistakes',a.full],['Half mistakes',a.half],['Total mistakes',f1(net)],['Words typed',m],['Omitted / extra words',a.om+' / '+a.ad],['Keystrokes',keys],['Backspaces',bsCount],['Keystrokes per hour',Math.round(keys/mn*60)],['Time',fm(finalEl)]].map(r=>'<div><b>'+r[1]+'</b><span>'+r[0]+'</span></div>').join('')+'</div><div class="rev">'+rv+'</div><div class="lg"><span class="w-f">Red</span> = full mistake (wrong, extra or missing word). <span class="w-h">Blue</span> = half mistake (spelling or spacing). Net speed = (keystrokes &divide; 5 &minus; total mistakes) &divide; minutes. This is an estimate; your exam may count slightly differently.</div><div class="row"><button id="dClose" type="button">Close</button><button id="dAgain" class="primary" type="button">Try again</button></div>';
+  if(m>0&&finalEl>=5)saveH({t:Date.now(),net:Math.round(netW),gross:Math.round(gross),acc:+acc.toFixed(1),f:a.full,h:a.half,s:Math.round(finalEl),ex:exam?1:0});
+  $('dClose').onclick=()=>d.classList.add('hide');$('dAgain').onclick=reset;
   d.classList.remove('hide');
 }
-const REM={KeyQ:['ौ','औ'],KeyW:['ै','ऐ'],KeyE:['ा','आ'],KeyR:['ी','ई'],KeyT:['ू','ऊ'],KeyY:['ब','भ'],KeyU:['ह','ङ'],KeyI:['ग','घ'],KeyO:['द','ध'],KeyP:['ज','झ'],BracketLeft:['ड','ढ'],BracketRight:['़','ॉ'],
-KeyA:['ो','ओ'],KeyS:['े','ए'],KeyD:['्','अ'],KeyF:['ि','इ'],KeyG:['ु','उ'],KeyH:['प','फ'],KeyJ:['र','ऱ'],KeyK:['क','ख'],KeyL:['त','थ'],Semicolon:['च','छ'],Quote:['ट','ठ'],
-KeyZ:['ॅ','ऑ'],KeyX:['ं','ँ'],KeyC:['म','ण'],KeyV:['न','ऩ'],KeyB:['व','ऴ'],KeyN:['ल','ळ'],KeyM:['स','श'],Comma:[',','ष'],Period:['.','।'],Slash:['य','य़'],Equal:['ृ','ऋ']};
-const ROWS=[['KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight'],['KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote'],['KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash']];
-const REV={};for(const c in REM)REM[c].forEach((ch,s)=>{if(!(ch in REV))REV[ch]={c,s}});
+const REM={Backquote:['़','द्य'],Digit1:['1','।'],Digit2:['2','/'],Digit3:['3','ः'],Digit4:['4','*'],Digit5:['5','-'],Digit6:['6','‘'],Digit7:['7','’'],Digit8:['8','द्ध'],Digit9:['9','त्र'],Digit0:['0','ऋ'],Minus:[';','.'],Equal:['ृ','्'],
+KeyQ:['ु','फ'],KeyW:['ू','ॅ'],KeyE:['म','म्'],KeyR:['त','त्'],KeyT:['ज','ज्'],KeyY:['ल','ल्'],KeyU:['न','न्'],KeyI:['प','प्'],KeyO:['व','व्'],KeyP:['च','च्'],BracketLeft:['ख','क्ष'],BracketRight:[',','द्व'],Backslash:['(',')'],
+KeyA:['ं','ा'],KeyS:['े','ै'],KeyD:['क','क्'],KeyF:['ि','थ्'],KeyG:['ह','ळ'],KeyH:['ी','भ्'],KeyJ:['र','श्र'],KeyK:['ा','ज्ञ'],KeyL:['स','स्'],Semicolon:['य','रू'],Quote:['श','ष्'],
+KeyZ:['्र','र्'],KeyX:['ग','ग्'],KeyC:['ब','ब्'],KeyV:['अ','ट'],KeyB:['इ','ठ'],KeyN:['द','छ'],KeyM:['उ','ड'],Comma:['ए','ढ'],Period:['ण्','झ'],Slash:['ध्','घ्']};
+const ROWS=[['Backquote','Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus','Equal'],['KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash'],['KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote'],['KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash']];
+const COMP=[['अा','आ'],['आे','ओ'],['आै','औ'],['ाे','ो'],['ाै','ौ'],['एै','ऐ'],['इी','ई'],['उू','ऊ'],['ाॅ','ॉ']];
+const PEND={'आ':['अ'],'ओ':['अ','आ'],'औ':['अ','आ'],'ो':['ा'],'ौ':['ा'],'ऐ':['ए'],'ई':['इ'],'ऊ':['उ'],'ॉ':['ा']};
+const DEC={'आ':['अ','ा'],'ओ':['अ','ा','े'],'औ':['अ','ा','ै'],'ो':['ा','े'],'ौ':['ा','ै'],'ऐ':['ए','ै'],'ई':['इ','ी'],'ऊ':['उ','ू'],'ॉ':['ा','ॅ']};
+const REV={};[0,1].forEach(q=>{for(const c in REM){const ch=REM[c][q];if(Array.from(ch).length===1&&!(ch in REV))REV[ch]={c,s:q}}});
+const CNs='[क-हक़-य़]',RV=new RegExp('ि((?:'+CNs+'़?्)*'+CNs+'़?)','g'),toLog=s=>s.replace(RV,'$1ि');
+function prep(){
+  if(!useVis){P=[];V=[];return}
+  const C=new RegExp(CNs),o=[];
+  for(let k=0;k<T.length;k++){
+    let e=k-1;if(T[e]==='़')e--;
+    if(T[k]==='ि'&&e>=0&&C.test(T[e])){
+      let s=e;
+      while(T[s-1]==='्'){let q=s-2;if(T[q]==='़')q--;if(q>=0&&C.test(T[q]))s=q;else break}
+      o.splice(o.length-(k-s),0,k);
+    }else o.push(k);
+  }
+  P=o;V=o.map(i=>T[i]);
+}
+function pend(i,typed){const X=useVis?V:T;return i>=0&&i===typed.length-1&&!!PEND[X[i]]&&PEND[X[i]].includes(typed[i])}
+const EN={Backquote:['`','~'],Digit1:['1','!'],Digit2:['2','@'],Digit3:['3','#'],Digit4:['4','$'],Digit5:['5','%'],Digit6:['6','^'],Digit7:['7','&'],Digit8:['8','*'],Digit9:['9','('],Digit0:['0',')'],Minus:['-','_'],Equal:['=','+'],
+KeyQ:['q','Q'],KeyW:['w','W'],KeyE:['e','E'],KeyR:['r','R'],KeyT:['t','T'],KeyY:['y','Y'],KeyU:['u','U'],KeyI:['i','I'],KeyO:['o','O'],KeyP:['p','P'],BracketLeft:['[','{'],BracketRight:[']','}'],Backslash:['\\','|'],
+KeyA:['a','A'],KeyS:['s','S'],KeyD:['d','D'],KeyF:['f','F'],KeyG:['g','G'],KeyH:['h','H'],KeyJ:['j','J'],KeyK:['k','K'],KeyL:['l','L'],Semicolon:[';',':'],Quote:["'",'"'],
+KeyZ:['z','Z'],KeyX:['x','X'],KeyC:['c','C'],KeyV:['v','V'],KeyB:['b','B'],KeyN:['n','N'],KeyM:['m','M'],Comma:[',','<'],Period:['.','>'],Slash:['/','?']};
+const REVE={};[0,1].forEach(q=>{for(const c in EN){const ch=EN[c][q];if(!(ch in REVE))REVE[ch]={c,s:q}}});
+function setLang(en,q){kbEn=en;$('lang').textContent=en?'Keys: English':'Keys: हिंदी';if(!q){drawKb();$('inp').focus()}}
 function drawKb(){
-  if(!useRem)return;
-  const n=T[Array.from($('inp').value).length],t=n&&REV[n];
-  $('kbd').innerHTML=ROWS.map(r=>'<div class="krow">'+r.map(c=>'<div class="k'+(t&&t.c===c?' nk'+(t.s?' sh':''):'')+'"><small>'+REM[c][1]+'</small><b>'+REM[c][0]+'</b></div>').join('')+'</div>').join('');
+  if(exam)return;
+  const en=kbEn||!useRem,M=en?EN:REM,RR=en?REVE:REV,X=useVis?V:T,typed=Array.from($('inp').value),p=typed.length-1;let nx;
+  if(!en&&pend(p,typed))nx=DEC[X[p]][PEND[X[p]].indexOf(typed[p])+1];
+  else{const n=X[typed.length];nx=n in RR?n:(!en&&DEC[n]?DEC[n][0]:null)}
+  const t=nx&&RR[nx];
+  $('kbd').innerHTML=ROWS.map(r=>'<div class="krow">'+r.map(c=>{const m=M[c],L=en&&/^[a-z]$/.test(m[0]);return '<div class="k'+(t&&t.c===c?' nk'+(t.s?' sh':''):'')+'"><small>'+(L?'&nbsp;':esc(m[1]))+'</small><b>'+esc(L?m[0].toUpperCase():m[0])+'</b></div>'}).join('')+'</div>').join('')+'<div class="krow"><div class="k sp'+(nx===' '?' nk':'')+'"><b>space</b></div></div>';
 }
 $('inp').addEventListener('keydown',e=>{
-  if(!useRem||finished||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(useRem&&e.ctrlKey&&e.code==='Space'){e.preventDefault();setLang(!kbEn);return}
+  if(!useRem||kbEn||finished||e.ctrlKey||e.metaKey||e.altKey)return;
   const m=REM[e.code];if(!m)return;
   e.preventDefault();
-  $('inp').value+=m[e.shiftKey?1:0];onInput();
+  let v=$('inp').value+m[e.shiftKey?1:0];
+  for(const [x,y] of COMP){if(v.endsWith(x)){v=v.slice(0,-x.length)+y;composed=true;break}}
+  $('inp').value=v;onInput();
 });
 $('inp').addEventListener('input',onInput);
 $('inp').addEventListener('compositionstart',()=>composing=true);
 $('inp').addEventListener('compositionend',()=>{composing=false;onInput()});
+$('inp').addEventListener('keydown',e=>{
+  if(e.key==='Backspace'&&!exam&&!finished)bsCount++;
+  if(!exam)return;
+  if(['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(e.key)||((e.ctrlKey||e.metaKey)&&'azxvy'.includes(e.key.toLowerCase())))e.preventDefault();
+});
+$('inp').addEventListener('beforeinput',e=>{if(exam&&/^(delete|history)/.test(e.inputType))e.preventDefault()});
+$('inp').addEventListener('paste',e=>{if(exam)e.preventDefault()});
+['click','select','mouseup'].forEach(ev=>$('inp').addEventListener(ev,()=>{if(exam){const l=$('inp').value.length;$('inp').setSelectionRange(l,l)}}));
+drawHist();
+try{const pf=localStorage.getItem('typing-prefill');if(pf){$('src').value=pf;localStorage.removeItem('typing-prefill')}}catch(e){}
 </script>
 </body>
 </html>

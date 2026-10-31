@@ -1,0 +1,2 @@
+# Add this line after AdSense approves your site. Replace the 16 digits with your own publisher ID.
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
