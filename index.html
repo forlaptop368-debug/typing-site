@@ -138,6 +138,27 @@ option{background:var(--solid);color:var(--ink)}
 .foot a{color:inherit;text-decoration:none;margin:0 12px}.foot a:hover{color:var(--gold)}
 .adslot{margin-top:20px;min-height:90px;text-align:center}.adslot:empty{display:none}.adslot::before{content:"Advertisement";display:block;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
 #info{margin-top:44px;max-width:760px}#info h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.6rem;color:var(--gold);margin:30px 0 6px;font-weight:600}#info p,#info li{color:var(--mute);line-height:1.75}#info a{color:var(--gold)}#info details{border-bottom:1px solid var(--line);padding:12px 0}#info summary{cursor:pointer;font-weight:500;color:var(--ink)}#info details p{margin:8px 0 0}
+.ti{font:inherit;font-size:.9rem;padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink);min-width:220px;flex:1}.ti:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px var(--glow)}
+.sv{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}.sv b{display:block;font-weight:500}.sv small{color:var(--mute)}.sv .acts{display:flex;gap:8px;flex-shrink:0}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.sv{flex-wrap:wrap}.sv .acts{flex-wrap:wrap;justify-content:flex-end}.sv .acts button{padding:8px 14px;font-size:.78rem}
+.opt{transition:background .15s,color .15s,border-color .15s,box-shadow .15s,transform .15s}
+.opt:hover:not(:disabled),.opt:focus-visible{background:linear-gradient(135deg,#f6e4a6,#d4af37 55%,#a67c1a);color:#1b1405;border-color:transparent;box-shadow:0 10px 24px -8px rgba(212,175,55,.7)}
+.opt.del:hover:not(:disabled){background:var(--badbg);color:var(--bad);border-color:var(--bad);box-shadow:none}
+/* gold hover highlight on every button */
+button,.file{transition:background .15s,color .15s,border-color .15s,box-shadow .15s,transform .15s,filter .15s}
+button:hover:not(:disabled):not(.primary),button:focus-visible:not(:disabled):not(.primary),.file:hover{background:linear-gradient(135deg,#f6e4a6,#d4af37 55%,#a67c1a);color:#1b1405;border-color:transparent;box-shadow:0 10px 24px -8px rgba(212,175,55,.7);transform:translateY(-1px)}
+button.del:hover:not(:disabled):not(.primary){background:var(--badbg);color:var(--bad);border:1px solid var(--bad);box-shadow:none}
+:root:root:root:root button.primary:hover:not(:disabled){filter:brightness(1.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 18px 36px -10px rgba(212,175,55,.9);transform:translateY(-2px)}
+select:hover{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
+/* action buttons stacked on the right edge */
+main{max-width:1040px}
+#play:not(.hide){display:grid;grid-template-columns:minmax(0,1fr) 190px;column-gap:22px;align-items:start}
+#play>*{grid-column:1}
+#play>.row{grid-column:2;grid-row:1 / span 8;display:flex;flex-direction:column;align-items:stretch;gap:16px;margin-top:0;padding-left:22px;border-left:1px solid var(--line);position:sticky;top:16px;align-self:start}
+#play>.row button{width:100%;text-align:center}
+@media (max-width:760px){#play:not(.hide){display:block}#play>.row{flex-direction:row;flex-wrap:wrap;border-left:0;padding-left:0;margin-top:16px;position:static}#play>.row button{width:auto}}
+.opt.on{background:linear-gradient(135deg,#f6e4a6,#d4af37 55%,#a67c1a);color:#1b1405;border-color:transparent}
 </style>
 <!-- ADSENSE: after AdSense gives you your code, paste the <script async src="...adsbygoogle.js?client=ca-pub-..."> line here (same on every page) -->
 <meta name="description" content="Free Hindi and English typing practice with Mangal Remington Gail keys, exam-style scoring and progress tracking.">
@@ -151,6 +172,7 @@ option{background:var(--solid);color:var(--ink)}
 <section id="setup" class="card">
   <label class="l" for="src">Your text</label>
   <textarea id="src" rows="8" placeholder="Paste Hindi or English text here…"></textarea>
+  <div id="saveBar" class="row"><input id="saveTitle" class="ti" type="text" maxlength="60" placeholder="Name this text (optional)" aria-label="Name for this text"><button id="saveBtn" type="button" disabled>Save this text</button><span id="saveMsg" class="lg">Save your text to reuse it later.</span></div>
   <div class="row">
     <label class="file">Upload .txt<input type="file" id="file" accept=".txt,text/plain"></label>
     <button id="sEn" type="button">English sample</button>
@@ -177,6 +199,8 @@ option{background:var(--solid);color:var(--ink)}
     <button id="start" class="primary" type="button">Start typing</button>
   </div>
   <div id="msg" class="msg"></div>
+  <div id="library"></div>
+  <div id="saved"></div>
   <div id="hist"></div>
   <div class="adslot"><!-- AD SLOT: paste your AdSense ad unit (the <ins class="adsbygoogle"> block) here after approval --></div>
 </section>
@@ -221,13 +245,14 @@ option{background:var(--solid);color:var(--ink)}
 </section>
 <p class="foot"><a href="articles.html">Articles</a><a href="passages.html">Passages</a><a href="guide.html">Guide</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
 </main>
+<script src="passages.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const SAMPLES={
 en:"The quick brown fox jumps over the lazy dog. Regular practice builds speed, and accuracy matters more than speed in the beginning. Keep your eyes on the text and let your fingers find the keys.",
 hi:"भारत एक विशाल और विविधताओं से भरा देश है। यहाँ अनेक भाषाएँ बोली जाती हैं और हर क्षेत्र की अपनी संस्कृति है। नियमित अभ्यास से टाइपिंग की गति और शुद्धता दोनों बढ़ती हैं।"
 };
-let kbEn=false,exam=false,bsCount=0,pausedAt=0,composed=false,useRem=false,useVis=false,P=[],V=[],B=[],limit=0,finalEl=0,T=[],start=0,timer=null,prevLen=0,keys=0,errs=0,finished=false,composing=false;
+let resumeEl=0,curId=null,curSet=null,kbEn=false,exam=false,bsCount=0,pausedAt=0,composed=false,useRem=false,useVis=false,P=[],V=[],B=[],limit=0,finalEl=0,T=[],start=0,timer=null,prevLen=0,keys=0,errs=0,finished=false,composing=false;
 
 $('tm').onchange=()=>$('tcw').classList.toggle('hide',$('tm').value!=='c');
 $('sEn').onclick=()=>$('src').value=SAMPLES.en;
@@ -246,6 +271,7 @@ $('start').onclick=()=>{
   if(!t){$('msg').textContent='Add some text first: paste it or upload a .txt file.';return}
   if(new RegExp('(^|[^क-हक़-य़़])ि').test(t))t=toLog(t);
   T=Array.from(t);B=T.slice();
+  curId=(loadS().find(r=>r.text===$('src').value.trim())||{}).id||null;curSet={mode:$('mode').value,sc:$('sc').value,tm:$('tm').value,tc:$('tc').value,size:$('size').value,nl:$('keepNl').checked,kb:$('kb').value};resumeEl=0;
   let m=$('tm').value;m=m==='c'?parseInt($('tc').value,10):parseInt(m,10);
   if($('tm').value==='c'&&!(m>=5&&m<=60)){$('msg').textContent='Enter a custom time between 5 and 60 minutes.';return}
   limit=(m||0)*60;$('tlab').textContent=limit?'Time left':'Time';
@@ -259,15 +285,15 @@ $('start').onclick=()=>{
   $('setup').classList.add('hide');$('info').classList.add('hide');$('play').classList.remove('hide');
   reset();
 };
-$('back').onclick=()=>{clearInterval(timer);$('play').classList.add('hide');$('setup').classList.remove('hide');$('info').classList.remove('hide');drawHist()};
-$('restart').onclick=reset;
+$('back').onclick=()=>{saveProg();clearInterval(timer);$('play').classList.add('hide');$('setup').classList.remove('hide');$('info').classList.remove('hide');drawHist();drawSaved()};
+$('restart').onclick=()=>{if(curId)delP(curId);reset()};
 $('lang').onclick=()=>setLang(!kbEn);
 $('pause').onclick=()=>{
   const b=$('pause'),i=$('inp');
   if(finished)return;
   if(!start){b.textContent='Start typing first';setTimeout(()=>b.textContent='Pause',2000);return}
   if(pausedAt){start+=Date.now()-pausedAt;pausedAt=0;timer=setInterval(stats,250);i.disabled=false;i.focus();b.textContent='Pause'}
-  else{pausedAt=Date.now();clearInterval(timer);i.disabled=true;b.textContent='Resume'}
+  else{pausedAt=Date.now();clearInterval(timer);i.disabled=true;b.textContent='Resume';saveProg()}
 };
 $('submit').onclick=()=>{
   if(finished)return;
@@ -277,7 +303,7 @@ $('submit').onclick=()=>{
 $('show').onclick=()=>$('inp').focus();
 
 function reset(){
-  clearInterval(timer);timer=null;start=0;prevLen=0;keys=0;errs=0;finished=false;T=B.slice();finalEl=0;pausedAt=0;bsCount=0;$('pause').textContent='Pause';prep();$('prev').textContent='';
+  clearInterval(timer);timer=null;start=0;prevLen=0;keys=0;errs=0;finished=false;T=B.slice();finalEl=0;pausedAt=0;bsCount=0;resumeEl=0;$('pause').textContent='Pause';prep();$('prev').textContent='';
   const i=$('inp');i.value='';i.disabled=false;
   $('done').classList.add('hide');
   render();stats();i.focus();
@@ -306,7 +332,7 @@ function correctCount(){
   return n;
 }
 function stats(){
-  let el=finished?finalEl:(start?((pausedAt||Date.now())-start)/1000:0);
+  let el=finished?finalEl:(start?((pausedAt||Date.now())-start)/1000:resumeEl);
   if(limit&&el>limit)el=limit;
   if(limit&&start&&!finished&&el>=limit){finish();return}
   const mins=el/60;
@@ -324,7 +350,7 @@ function onInput(){
   let typed=Array.from(i.value);
   if(limit&&T.length<=typed.length+400){while(T.length<=typed.length+400)T=T.concat(/\s/.test(T[T.length-1])?[]:[' '],B);prep()}
   if(typed.length>T.length){typed=typed.slice(0,T.length);i.value=typed.join('')}
-  if(!start&&typed.length){start=Date.now();timer=setInterval(stats,250)}
+  if(!start&&typed.length){start=Date.now()-resumeEl*1000;resumeEl=0;timer=setInterval(stats,250)}
   const X=useVis?V:T;for(let k=prevLen;k<typed.length;k++){keys++;if(typed[k]!==X[k]&&!pend(k,typed))errs++}
   if(composed){composed=false;const k=typed.length-1;keys++;if(k>=0&&typed[k]!==X[k]&&!pend(k,typed))errs++}
   prevLen=typed.length;if(useVis)$('prev').textContent=toLog(i.value).slice(-250);
@@ -381,6 +407,7 @@ function finish(){
   const rv=tw.map((w,j)=>a.mk[j]==='f'?'<span class="w-f">'+esc(w)+'</span>':a.mk[j]==='h'?'<span class="w-h">'+esc(w)+'</span>':esc(w)).join(' ');
   d.innerHTML='<b>'+(limit&&finalEl>=limit?'Time’s up.':'Submitted.')+'</b> Your result:<div class="res">'+[['Net speed',Math.round(netW)+' WPM'],['Gross speed',Math.round(gross)+' WPM'],['Accuracy',acc.toFixed(1)+'%'],['Full mistakes',a.full],['Half mistakes',a.half],['Total mistakes',f1(net)],['Words typed',m],['Omitted / extra words',a.om+' / '+a.ad],['Keystrokes',keys],['Backspaces',bsCount],['Keystrokes per hour',Math.round(keys/mn*60)],['Time',fm(finalEl)]].map(r=>'<div><b>'+r[1]+'</b><span>'+r[0]+'</span></div>').join('')+'</div><div class="rev">'+rv+'</div><div class="lg"><span class="w-f">Red</span> = full mistake (wrong, extra or missing word). <span class="w-h">Blue</span> = half mistake (spelling or spacing). Net speed = (keystrokes &divide; 5 &minus; total mistakes) &divide; minutes. This is an estimate; your exam may count slightly differently.</div><div class="row"><button id="dClose" type="button">Close</button><button id="dAgain" class="primary" type="button">Try again</button></div>';
   if(m>0&&finalEl>=5)saveH({t:Date.now(),net:Math.round(netW),gross:Math.round(gross),acc:+acc.toFixed(1),f:a.full,h:a.half,s:Math.round(finalEl),ex:exam?1:0});
+  if(curId)delP(curId);
   $('dClose').onclick=()=>d.classList.add('hide');$('dAgain').onclick=reset;
   d.classList.remove('hide');
 }
@@ -444,6 +471,81 @@ $('inp').addEventListener('paste',e=>{if(exam)e.preventDefault()});
 ['click','select','mouseup'].forEach(ev=>$('inp').addEventListener(ev,()=>{if(exam){const l=$('inp').value.length;$('inp').setSelectionRange(l,l)}}));
 drawHist();
 try{const pf=localStorage.getItem('typing-prefill');if(pf){$('src').value=pf;localStorage.removeItem('typing-prefill')}}catch(e){}
+
+function loadS(){try{return JSON.parse(localStorage.getItem('typing-saved')||'[]')}catch(e){return[]}}
+function putS(a){try{localStorage.setItem('typing-saved',JSON.stringify(a));return true}catch(e){return false}}
+function saveBarUpdate(){$('saveBtn').disabled=$('src').value.trim().length<10}
+function saveText(){
+  const tx=$('src').value.trim();if(!tx)return;
+  const a=loadS(),ti=$('saveTitle').value.trim()||new Date().toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const ex=a.find(r=>r.text===tx);
+  if(ex){if($('saveTitle').value.trim())ex.title=ti;ex.t=Date.now()}else a.push({id:Date.now().toString(36),title:ti,text:tx,t:Date.now()});
+  if(putS(a.slice(-50))){$('saveMsg').textContent=ex?'Updated in your saved texts.':'Saved. Find it under Your saved texts.';$('saveTitle').value=''}
+  else $('saveMsg').textContent='Could not save: browser storage is full or blocked.';
+  drawSaved();
+}
+function drawSaved(){
+  const a=loadS(),pm=loadP(),el=$('saved');
+  if(!a.length){el.innerHTML='';return}
+  el.innerHTML='<hr style="border:0;border-top:1px solid var(--line);margin:16px 0 10px"><b>Your saved texts</b>'+a.map((r,i)=>{const pr=pm[r.id],lf=pr?progLeft(pr):'';return '<div class="sv"><div><b>'+(i+1)+'. '+esc(r.title)+'</b></div><div class="acts"><button type="button" class="opt" data-c="'+r.id+'"'+(pr?'':' disabled title="Nothing to continue yet"')+'>Continue'+(lf?' &middot; '+lf+' left':'')+'</button><button type="button" class="opt" data-o="'+r.id+'">Start over</button><button type="button" class="opt del" data-d="'+r.id+'">Delete</button></div></div>'}).join('');
+  el.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>startFrom(b.dataset.c,true));
+  el.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>startFrom(b.dataset.o,false));
+  el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{if(b.dataset.s){putS(loadS().filter(z=>z.id!==b.dataset.d));delP(b.dataset.d);drawSaved()}else{b.dataset.s=1;b.textContent='Confirm?'}});
+}
+$('saveBtn').onclick=saveText;
+$('src').addEventListener('input',saveBarUpdate);
+$('src').addEventListener('paste',()=>setTimeout(()=>{saveBarUpdate();if(!$('saveBtn').disabled)$('saveMsg').textContent='Want to use this text again later? Save it.'},0));
+setInterval(saveBarUpdate,400);
+saveBarUpdate();drawSaved();
+
+function loadP(){try{return JSON.parse(localStorage.getItem('typing-prog')||'{}')}catch(e){return{}}}
+function putP(m){try{localStorage.setItem('typing-prog',JSON.stringify(m))}catch(e){}}
+function delP(id){const m=loadP();if(id in m){delete m[id];putP(m)}}
+function progLeft(pr){const s=pr.set,lm=s.tm==='c'?parseInt(s.tc,10):parseInt(s.tm,10);if(!(lm>0))return '';const l=Math.max(0,Math.ceil(lm*60-pr.el));return Math.floor(l/60)+':'+String(l%60).padStart(2,'0')}
+function saveProg(){
+  if(!curId||finished||!curSet||$('play').classList.contains('hide'))return;
+  const n=Array.from($('inp').value).length;if(!n)return;
+  const el=Math.min(start?((pausedAt||Date.now())-start)/1000:resumeEl,limit||1e9);
+  const m=loadP();m[curId]={val:$('inp').value,el:Math.round(el*10)/10,keys:keys,errs:errs,bs:bsCount,set:curSet,t:Date.now()};putP(m);
+}
+function startFrom(id,cont){
+  const r=loadS().find(z=>z.id===id);if(!r)return;
+  const pr=cont?loadP()[id]:null;
+  $('src').value=r.text;saveBarUpdate();
+  if(pr){const s=pr.set;$('mode').value=s.mode;$('sc').value=s.sc;$('tm').value=s.tm;$('tc').value=s.tc;$('size').value=s.size;$('keepNl').checked=s.nl;$('kb').value=s.kb;$('tcw').classList.toggle('hide',s.tm!=='c')}
+  else delP(id);
+  $('start').onclick();
+  if(!pr||$('play').classList.contains('hide'))return;
+  const v=pr.val,n=Array.from(v).length;
+  $('inp').value=v;
+  if(limit&&T.length<=n+400){while(T.length<=n+400)T=T.concat(/\s/.test(T[T.length-1])?[]:[' '],B);prep()}
+  prevLen=n;keys=pr.keys;errs=pr.errs;bsCount=pr.bs;resumeEl=pr.el;
+  if(useVis)$('prev').textContent=toLog(v).slice(-250);
+  render();stats();$('inp').focus();
+}
+setInterval(saveProg,3000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveProg()});
+window.addEventListener('pagehide',saveProg);
+
+let libLang='all';
+function pickP(id,go){
+  const p=(window.PASSAGES||[]).find(z=>z.id===id);if(!p)return;
+  $('src').value=p.text;saveBarUpdate();$('msg').textContent='';
+  if(go){$('start').onclick();return}
+  $('saveMsg').textContent='Loaded “'+p.title+'”. Pick a timer, then press Start typing.';
+  $('src').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function drawLib(){
+  const L=window.PASSAGES||[],el=$('library');
+  if(!L.length){el.innerHTML='';return}
+  const f=L.filter(p=>libLang==='all'||p.lang===libLang);
+  const chip=(k,n)=>'<button type="button" class="opt'+(libLang===k?' on':'')+'" data-l="'+k+'">'+n+'</button>';
+  el.innerHTML='<hr style="border:0;border-top:1px solid var(--line);margin:16px 0 10px"><b>Ready-made matter</b><div class="row" style="margin-top:10px">'+chip('all','All')+chip('hi','हिंदी')+chip('en','English')+'</div>'+f.map((p,i)=>'<div class="sv"><div><b>'+(i+1)+'. '+esc(p.title)+'</b><small>'+(p.lang==='hi'?'हिंदी':'English')+'</small></div><div class="acts"><button type="button" class="opt" data-p="'+esc(p.id)+'">Select</button><button type="button" class="opt" data-g="'+esc(p.id)+'">Start now</button></div></div>').join('');
+  el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{libLang=b.dataset.l;drawLib()});
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>pickP(b.dataset.p,false));
+  el.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>pickP(b.dataset.g,true));
+}
+drawLib();
 </script>
 </body>
 </html>
