@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Progress Dashboard | Typing Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Source+Serif+4:wght@400;600&family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf8f1;--surface:rgba(255,255,255,.72);--ink:#1c1a14;--mute:#7a7466;--line:rgba(150,115,20,.26);--gold:#a67c1a;--accent:#a67c1a;--ok:#177a56;--bad:#c2263c;--badbg:#fde4e8;--curbg:#f6e4a8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b11;--surface:rgba(255,255,255,.04);--ink:#f4efe3;--mute:#9b97a8;--line:rgba(212,175,55,.22);--gold:#d4af37;--accent:#d4af37;--ok:#7fe0b4;--bad:#ff8a95;--badbg:rgba(255,90,110,.18);--curbg:rgba(212,175,55,.24)}}
+:root[data-theme="dark"]{--bg:#0b0b11;--surface:rgba(255,255,255,.04);--ink:#f4efe3;--mute:#9b97a8;--line:rgba(212,175,55,.22);--gold:#d4af37;--accent:#d4af37}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Source Serif 4","Noto Sans Devanagari",Georgia,serif}
+main{max-width:900px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;margin:0 0 16px;font-family:"Cormorant Garamond",Georgia,serif;font-weight:600}
+h2{font-size:1.5rem;margin:0 0 12px;color:var(--gold);font-family:"Cormorant Garamond",Georgia,serif;font-weight:600}
+p.sub{color:var(--mute);margin:0 0 20px}
+.stat{display:inline-block;padding:16px 24px;margin:10px 8px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;text-align:center;min-width:120px}
+.stat b{display:block;font-size:2rem;font-weight:700;color:var(--gold)}
+.stat span{font-size:.9rem;color:var(--mute)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.progress-bar{background:var(--line);border-radius:8px;height:12px;overflow:hidden;margin:12px 0}
+.progress-fill{height:100%;background:linear-gradient(135deg,#f6e4a6,#d4af37 48%,#9a7413)}
+.achievement{display:inline-block;background:linear-gradient(135deg,#f6e4a6,#d4af37 48%,#9a7413);color:#1b1405;padding:6px 12px;border-radius:999px;margin:4px 4px 4px 0;font-size:.85rem;font-weight:600}
+@media (prefers-color-scheme:dark){.achievement{background:linear-gradient(135deg,#f3dc9b,#d4af37 48%,#9a7413);color:#1b1405}}
+.homelink{display:inline-block;margin-bottom:16px;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);text-decoration:none}
+.homelink:hover{color:var(--gold)}
+</style>
+<meta name="description" content="Your typing progress dashboard - track WPM, accuracy, and achievements in Typing Studio">
+</head>
+<body>
+<main>
+<a class="homelink" href="index.html">&larr; Home</a>
+<div class="eyebrow" style="font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:#a67c1a;display:flex;align-items:center;gap:12px;font-weight:500;margin-bottom:20px">Typing studio &middot; हिंदी &amp; English</div>
+<h1>Your Progress Dashboard</h1>
+<p class="sub">Track your typing improvement, achievements, and daily practice.</p>
+
+<div class="stat">
+  <b id="totalTests">0</b>
+  <span>Tests Completed</span>
+</div>
+<div class="stat">
+  <b id="bestWPM">0</b>
+  <span>Best WPM</span>
+</div>
+<div class="stat">
+  <b id="totalWords">0</b>
+  <span>Words Typed</span>
+</div>
+<div class="stat">
+  <b id="streak">0</b>
+  <span>Day Streak</span>
+</div>
+
+<div class="card">
+  <h2>Monthly Progress</h2>
+  <div id="progressChart"></div>
+  <div id="weeklyLabels" style="display:flex;justify-content:space-around;font-size:.8rem;color:var(--mute);margin-top:8px"></div>
+</div>
+
+<div class="card">
+  <h2>Weekly Practice Summary</h2>
+  <div id="weeklyChart"></div>
+</div>
+
+<div class="card">
+  <h2>Performance Stats</h2>
+  <div id="stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px"></div>
+</div>
+
+<div class="card">
+  <h2>Keyboard Layout Preference</h2>
+  <p style="margin:0 0 12px;color:var(--mute);font-size:.9rem">Auto-detect | Hindi Remington | Device Keyboard</p>
+</div>
+
+<div class="adslot"></div>
+</main>
+
+<script>
+// Load typing history from localStorage (same as typing.html)
+const history = (function() {
+  try { return JSON.parse(localStorage.getItem('typing-hist') || '[]') }
+  catch(e) { return [] }
+})();
+
+// Calculate KPIs
+const totalTests = history.length;
+const totalWords = history.reduce((sum, r) => sum + (r.wt || 0), 0);
+const bestWPM = history.length ? Math.max(...history.map(r => r.net || 0)) : 0;
+const avgWPM = history.length ? Math.round(history.reduce((s, r) => s + (r.net || 0), 0) / history.length) : 0;
+const avgAcc = history.length ? Math.round(history.reduce((s, r) => s + (r.acc || 0), 0) / history.length) : 100;
+const totalTime = history.reduce((s, r) => s + (r.s || 0), 0);
+
+// Calculate streak
+let today = new Date();
+today.setHours(0,0,0,0);
+let streak = 0;
+let checkDate = new Date(today);
+for(let i = 0; i < 100; i++) {
+  checkDate.setDate(today.getDate() - i);
+  const hasEntry = history.some(r => {
+    const entryDate = new Date(r.t);
+    entryDate.setHours(0,0,0,0);
+    return entryDate.getTime() === checkDate.getTime();
+  });
+  if(hasEntry) streak++;
+  else break;
+}
+
+// Update displays
+document.getElementById('totalTests').textContent = totalTests;
+document.getElementById('bestWPM').textContent = bestWPM;
+document.getElementById('totalWords').textContent = totalWords.toLocaleString();
+document.getElementById('streak').innerHTML = streak + (streak ? ' 🔥' : '');
+
+// Weekly Progress Chart
+const last7Days = [];
+const today7 = new Date();
+for(let i = 6; i >= 0; i--) {
+  const d = new Date(today7);
+  d.setDate(today7.getDate() - i);
+  const dayHistory = history.filter(r => {
+    const rd = new Date(r.t);
+    rd.setHours(0,0,0,0);
+    return rd.getTime() === d.getTime();
+  });
+  const avgDayWPM = dayHistory.length ? Math.round(dayHistory.reduce((s,r) => s + (r.net || 0), 0) / dayHistory.length) : 0;
+  last7Days.push({date: new Date(d).getDay(), wpm: avgDayWPM, dateStr: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]]);
+}
+
+const maxWPM = Math.max(...last7Days.map(d => d.wpm || 1));
+const chart = document.getElementById('progressChart');
+const labels = document.getElementById('weeklyLabels');
+
+last7Days.forEach((d, i) => {
+  const barDiv = document.createElement('div');
+  barDiv.style.flex = '1';
+  barDiv.style.display = 'flex';
+  barDiv.style.flexDirection = 'column';
+  barDiv.style.alignItems = 'center';
+  const width = d.wpm ? Math.round((d.wpm/maxWPM)*100) : 0;
+  const color = d.wpm > 50 ? '#2ecc71' : d.wpm > 30 ? '#3498db' : d.wpm ? '#95a5a6' : '#ccc';
+  barDiv.innerHTML = `<div class="progress-bar"><div class="progress-fill" style="width:${width}%;background:${color}"></div></div><span style="font-size:.75rem;color:${d.wpm ? 'var(--ink)' : 'var(--mute)'}">${d.wpm}</span>`;
+  chart.appendChild(barDiv);
+
+  const labelDiv = document.createElement('div');
+  labelDiv.textContent = d.dateStr;
+  labelDiv.style.fontSize = '.7rem';
+  labelDiv.style.color = 'var(--mute)';
+  labels.appendChild(labelDiv);
+});
+
+// Weekly summary stats
+const weeklyStats = document.getElementById('weeklyChart');
+if(history.length) {
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const weekHistory = history.filter(r => new Date(r.t) >= weekAgo);
+
+  if(weekHistory.length) {
+    const wpmSum = weekHistory.reduce((s,r) => s + (r.net || 0), 0);
+    const accSum = weekHistory.reduce((s,r) => s + (r.acc || 0), 0);
+    weeklyStats.innerHTML = `
+      <div class="stat"><b>${Math.round(wpmSum/weekHistory.length)}</b><span>Week Avg WPM</span></div>
+      <div class="stat"><b>${Math.round(accSum/weekHistory.length)}%</b><span>Week Avg Accuracy</span></div>
+      <div class="stat"><b>${weekHistory.length}</b><span>Tests This Week</span></div>
+      <div class="stat"><b>${Math.round(totalTime/60)}h</b><span>Total Practice</span></div>
+    `;
+  }
+}
+
+// Performance Stats Card
+const statsDiv = document.getElementById('stats');
+if(history.length) {
+  statsDiv.innerHTML = `
+    <div class="stat"><b>${avgWPM}</b><span>Average WPM</span></div>
+    <div class="stat"><b>${avgAcc}%</b><span>Average Accuracy</span></div>
+    <div class="stat"><b>${Math.round(totalTime/60)}h</b><span>Total Time</span></div>
+  `;
+} else {
+  statsDiv.innerHTML = '<p style="color:var(--mute);text-align:center;margin:20px 0">No practice data yet. Complete a typing test to see your progress!</p>';
+}
+
+// Mobile responsiveness
+window.addEventListener('resize', () => {
+  if(window.innerWidth < 768) {
+    document.querySelector('.stat').style.minWidth = '100px';
+  }
+});
+</script>
+</body>
+</html>

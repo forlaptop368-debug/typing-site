@@ -33,9 +33,60 @@ ol.steps li{margin:6px 0}
   <button class="btn main" id="dlJs" type="button">Download passages.js</button>
   <button class="btn main" id="dlHtml" type="button">Download passages.html</button>
   <button class="btn" id="copyJs" type="button">Copy passages.js</button>
+  <button class="btn" id="gitPush" type="button">Push to GitHub</button>
   <button class="btn del" id="reset" type="button">Reset to published</button>
 </div>
 <div id="out" class="msg"></div>
+
+<div class="card" style="border-color:var(--gold);margin-top:16px">
+  <h2 style="margin-top:0;color:var(--gold)">⚠️ Important: How to Open This Page</h2>
+  <p style="margin:0 0 12px;color:var(--mute)">The GitHub push feature requires a web server due to browser security. You cannot open this page directly from your computer.</p>
+  <h3 style="margin:12px 0 6px;color:var(--ink)">Option 1: Use GitHub Pages (Easiest)</h3>
+  <ol style="margin:6px 0 12px 20px;font-size:.9rem;color:var(--mute)">
+    <li>Upload all files to your GitHub repo</li>
+    <li>Go to Settings → Pages → Source: main → Save</li>
+    <li>Open: <code style="background:var(--surface);padding:2px 6px;border-radius:4px">https://forlaptop368-debug.github.io/typing-site/admin.html</code></li>
+  </ol>
+  <h3 style="margin:12px 0 6px;color:var(--ink)">Option 2: Local Server</h3>
+  <ol style="margin:6px 0 12px 20px;font-size:.9rem;color:var(--mute)">
+    <li>Open Command Prompt in your project folder</li>
+    <li>Run: <code style="background:var(--surface);padding:2px 6px;border-radius:4px">python -m http.server 8000</code></li>
+    <li>Open: <code style="background:var(--surface);padding:2px 6px;border-radius:4px">http://localhost:8000/admin.html</code></li>
+  </ol>
+  <p style="margin:12px 0 0;color:var(--mute);font-size:.85rem">After opening from a web server, your GitHub settings will work automatically!</p>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <h2 style="margin-top:0;display:flex;justify-content:space-between;align-items:center">
+    <span>GitHub Settings</span>
+    <button class="btn" id="toggleGit" type="button" style="font-size:.75rem;padding:4px 12px">Hide</button>
+  </h2>
+  <div id="gitSettingsContent">
+  <div class="row" style="margin-bottom:10px">
+    <label class="msg" style="margin:0;flex:1">
+      Repository owner
+      <input class="in" id="ghOwner" type="text" placeholder="e.g. yourusername" style="margin-top:4px;width:100%">
+    </label>
+    <label class="msg" style="margin:0;flex:1">
+      Repository name
+      <input class="in" id="ghRepo" type="text" placeholder="e.g. typing-studio" style="margin-top:4px;width:100%">
+    </label>
+    <label class="msg" style="margin:0;flex:1">
+      Branch
+      <input class="in" id="ghBranch" type="text" value="main" placeholder="main" style="margin-top:4px;width:100%">
+    </label>
+  </div>
+  <label class="msg" style="margin:0;display:block">
+    GitHub Personal Access Token (classic, with repo scope)
+    <input class="in" id="ghToken" type="password" placeholder="ghp_..." style="margin-top:4px;width:100%"> <span class="msg" style="font-size:.8rem;color:var(--mute)">Stored locally in your browser. Never share it.</span>
+  </label>
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="saveGit" type="button">Save Settings</button>
+    <button class="btn" id="testGit" type="button">Test Connection</button>
+    <button class="btn del" id="clearGit" type="button">Clear</button>
+  </div>
+  </div>
+</div>
 
 <div class="card">
   <h2 id="formTitle" style="margin-top:0">Add new matter</h2>
@@ -119,7 +170,7 @@ function act(a,i){
   else if(a==='down'&&i<list.length-1){[list[i+1],list[i]]=[list[i],list[i+1]];persist()}
   else if(a==='try'){try{localStorage.setItem('typing-prefill',list[i].text)}catch(e){}window.open('typing.html','_blank')}
   else if(a==='edit'){editing=i;$('title').value=list[i].title;$('lang').value=list[i].lang;$('text').value=list[i].text;$('keepNl').checked=list[i].text.indexOf('\n')>-1;$('formTitle').textContent='Edit matter';$('save').textContent='Save changes';$('cancel').hidden=false;count();$('title').scrollIntoView({behavior:'smooth',block:'center'})}
-  else if(a==='del'){if(pendingDel===i){list.splice(i,1);pendingDel=-1;if(editing===i)clearForm();persist()}else{pendingDel=i;render()}}
+  else if(a==='del'){if(pendingDel===i){list.splice(i,1);pendingDel=-1;if(editing===i)clearForm();persist();const s=gitSettings();if(s.owner&&s.repo&&s.token)gitPush()}else{pendingDel=i;render()}}
 }
 function count(){$('count').textContent=words($('text').value)+' words'}
 function clearForm(){editing=-1;$('title').value='';$('text').value='';$('lang').value='auto';$('formTitle').textContent='Add new matter';$('save').textContent='Add matter';$('cancel').hidden=true;count()}
@@ -129,8 +180,13 @@ function saveForm(){
   if(text.length<20){m.className='msg err';m.textContent='The matter is too short. Please add at least a sentence.';return}
   const lang=$('lang').value==='auto'?detect(text):$('lang').value;
   if(editing>=0){list[editing]={id:list[editing].id,lang,title,text};m.textContent='Changes saved.'}
-  else{list.push({id:nextId(),lang,title,text});m.textContent='Added. Remember to download and upload the files.'}
+  else{list.push({id:nextId(),lang,title,text});m.textContent='Added. Pushing to GitHub...'}
   clearForm();persist();
+  // Auto-push to GitHub if settings are configured
+  const s=gitSettings();
+  if(s.owner&&s.repo&&s.token){
+    gitPush();
+  }
 }
 function download(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:type+';charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
 
@@ -154,6 +210,133 @@ $('files').onchange=async e=>{
     list.push({id:nextId(),lang:detect(text),title:f.name.replace(/\.[^.]+$/,''),text});added++;
   }
   $('impMsg').textContent=added+' of '+fs.length+' file(s) added.';e.target.value='';persist();
+  // Auto-push to GitHub if settings are configured
+  const s=gitSettings();
+  if(s.owner&&s.repo&&s.token){
+    gitPush();
+  }
 };
+
+// GitHub API Integration
+function gitSettings(){
+  try{
+    return JSON.parse(localStorage.getItem('admin-git')||'{}');
+  }catch(e){return{}}
+}
+function saveGitSettings(s){
+  try{localStorage.setItem('admin-git',JSON.stringify(s))}catch(e){}
+}
+function loadGitSettings(){
+  const s=gitSettings();
+  // Pre-fill with your known defaults
+  $('ghOwner').value=s.owner||'forlaptop368-debug';
+  $('ghRepo').value=s.repo||'typing-site';
+  $('ghBranch').value=s.branch||'main';
+  $('ghToken').value=s.token||'';
+  // Show live site URL
+  $('out').textContent='✅ Live site: https://freeetyping.vercel.app';
+}
+async function gitPush(){
+  const out=$('out');
+  const s=gitSettings();
+  if(!s.owner||!s.repo||!s.token){out.className='msg err';out.textContent='Please fill in all GitHub settings first.';return}
+  out.className='msg';out.textContent='Pushing to GitHub...';
+  try{
+    // CORS workaround for file:// protocol
+    if(window.location.protocol==='file:'){
+      throw new Error('CORS: This page must be opened from a web server, not directly from file system. See instructions below.');
+    }
+    const js=jsText();
+    const html=await fetch('passages.html',{cache:'no-store'}).then(r=>r.text());
+    const htmlOut=patchHtml(html);
+    if(!htmlOut){out.className='msg err';out.textContent='Could not update passages.html.';return}
+
+    // Push passages.js
+    const jsPath='passages.js';
+    const jsRes=await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${jsPath}?ref=${s.branch}`,{
+      headers:{Authorization:`Bearer ${s.token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    const jsData=jsRes.ok?await jsRes.json():null;
+    const jsBody={message:'Update passages from admin page',content:btoa(unescape(encodeURIComponent(js))),branch:s.branch};
+    if(jsData&&jsData.sha)jsBody.sha=jsData.sha;
+    const jsPush=await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${jsPath}`,{
+      method:'PUT',headers:{Authorization:`Bearer ${s.token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(jsBody)
+    });
+    if(!jsPush.ok){const d=await jsPush.json();throw new Error('JS: '+(d.message||jsPush.status))}
+
+    // Push passages.html
+    const htmlPath='passages.html';
+    const htmlRes=await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${htmlPath}?ref=${s.branch}`,{
+      headers:{Authorization:`Bearer ${s.token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    const htmlData=htmlRes.ok?await htmlRes.json():null;
+    const htmlBody={message:'Update passages from admin page',content:btoa(unescape(encodeURIComponent(htmlOut))),branch:s.branch};
+    if(htmlData&&htmlData.sha)htmlBody.sha=htmlData.sha;
+    const htmlPush=await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${htmlPath}`,{
+      method:'PUT',headers:{Authorization:`Bearer ${s.token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(htmlBody)
+    });
+    if(!htmlPush.ok){const d=await htmlPush.json();throw new Error('HTML: '+(d.message||htmlPush.status))}
+
+    out.className='msg';out.textContent='✅ Pushed to GitHub successfully! Vercel will redeploy in ~30 seconds.';
+    $('saveGit').disabled=true;
+  }catch(e){
+    out.className='msg err';out.textContent='❌ Push failed: '+e.message;
+  }
+}
+async function testGitConnection(){
+  const out=$('out');
+  const s={owner:$('ghOwner').value,repo:$('ghRepo').value,token:$('ghToken').value,branch:$('ghBranch').value||'main'};
+  if(!s.owner||!s.repo||!s.token){out.className='msg err';out.textContent='Please fill in all fields first.';return}
+  out.className='msg';out.textContent='Testing connection...';
+  try{
+    const r=await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}`,{
+      headers:{Authorization:`Bearer ${s.token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    if(!r.ok){const d=await r.json();throw new Error(d.message||r.status)}
+    const d=await r.json();
+    out.className='msg';out.textContent='✅ Connected! Repo: '+d.full_name+' (default branch: '+d.default_branch+')';
+    $('ghBranch').value=d.default_branch||'main';
+  }catch(e){
+    out.className='msg err';out.textContent='❌ Connection failed: '+e.message;
+  }
+}
+// Auto-save settings as user types
+['ghOwner','ghRepo','ghBranch','ghToken'].forEach(id=>{
+  const el=$(id);
+  el.addEventListener('input',()=>{
+    saveGitSettings({owner:$('ghOwner').value,repo:$('ghRepo').value,token:$('ghToken').value,branch:$('ghBranch').value||'main'});
+  });
+});
+
+$('saveGit').onclick=()=>{
+  saveGitSettings({owner:$('ghOwner').value,repo:$('ghRepo').value,token:$('ghToken').value,branch:$('ghBranch').value||'main'});
+  $('out').textContent='✅ GitHub settings saved locally.';
+};
+$('testGit').onclick=testGitConnection;
+$('gitPush').onclick=gitPush;
+$('clearGit').onclick=()=>{
+  localStorage.removeItem('admin-git');
+  loadGitSettings();
+  $('out').textContent='GitHub settings cleared.';
+};
+// Toggle GitHub settings visibility
+$('toggleGit').onclick=()=>{
+  const content=$('gitSettingsContent');
+  const hidden=content.style.display==='none';
+  content.style.display=hidden?'block':'none';
+  $('toggleGit').textContent=hidden?'Hide':'Show';
+};
+
+// Auto-load settings on page load
+loadGitSettings();
+
+// Auto-fill if settings exist
+const saved = gitSettings();
+if(saved.owner && saved.repo && saved.token){
+  $('out').textContent='✅ GitHub settings loaded automatically.';
+}
+
 render();count();
 </script></body></html>

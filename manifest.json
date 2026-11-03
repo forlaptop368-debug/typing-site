@@ -1,0 +1,14 @@
+{
+  "name": "Typing Studio",
+  "short_name": "Typing Studio",
+  "description": "Free Hindi and English typing practice with exam-style scoring",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fbf8f1",
+  "theme_color": "#a67c1a",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {"src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23a67c1a' rx='20'/%3E%3Ctext x='96' y='130' font-family='Arial' font-size='96' text-anchor='middle' fill='%23fff'%3E✈%3C/text%3E%3C/svg%3E", "sizes": "192x192", "type": "image/svg+xml"}
+  ]
+}

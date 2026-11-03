@@ -219,16 +219,45 @@ main{max-width:1040px}
   <div id="show" class="card" aria-label="Text to type"></div>
   <div class="tw"><textarea id="inp" placeholder="Start typing here. The timer begins with your first key." autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><div id="prev" class="hide" aria-label="What you typed"></div></div>
   <div id="kbd" class="hide"></div>
+  <div id="soundPanel" style="position:fixed;top:50%;right:20px;transform:translateY(-50%);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:90;min-width:200px;display:none">
+    <h4 style="margin:0 0 12px;font-size:1rem;color:var(--gold);display:flex;justify-content:space-between;align-items:center">
+      <span>🔊 Sound</span>
+      <button onclick="document.getElementById('soundPanel').style.display='none'" style="border:0;background:none;color:var(--mute);cursor:pointer;font-size:1.2rem">×</button>
+    </h4>
+    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;font-size:.9rem">
+      <input type="checkbox" id="soundEnabled" checked style="width:auto"> Key clicks
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;font-size:.9rem">
+      <input type="checkbox" id="mistakeSound" style="width:auto"> Mistake sound
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;font-size:.9rem">
+      <input type="checkbox" id="successSound" checked style="width:auto"> Success sound
+    </label>
+    <button onclick="testSound()" style="width:100%;margin-top:8px;padding:6px 12px;border:1px solid var(--line);background:var(--bg);border-radius:8px;cursor:pointer;font-size:.85rem">▶ Test sound</button>
+  </div>
   <div class="row">
     <button id="lang" type="button" class="hide">Keys: हिंदी</button>
     <button id="pause" type="button">Pause</button>
     <button id="restart" type="button">Restart</button>
     <button id="back" type="button">Change text</button>
     <button id="submit" class="primary" type="button">Submit</button>
+    <button id="soundBtn" type="button" onclick="document.getElementById('soundPanel').style.display=document.getElementById('soundPanel').style.display==='none'?'block':'none'" style="border:0;background:none;color:var(--ink);cursor:pointer;font-size:1rem">🔊</button>
   </div>
   <p class="sub" style="margin-top:14px"><span id="kbnote"></span> <span id="bsnote"></span></p>
 </section>
 <section id="info">
+<h2>Free Hindi and English typing practice</h2>
+<h3>⚡ Typing Games</h3>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+<button class="cta" onclick="startTypingGame()" style="border:0;cursor:pointer">Speed Test</button>
+<button class="cta" onclick="startAccuracyGame()" style="border:0;cursor:pointer">Accuracy Challenge</button>
+<button class="cta" onclick="startEnduranceGame()" style="border:0;cursor:pointer">Endurance Mode</button>
+</div>
+<h3>🔊 Sound Settings</h3>
+<label style="margin:0"><input type="checkbox" id="soundEnabled" checked> Key click sounds</label>
+<label style="margin:0;margin-left:20px"><input type="checkbox" id="mistakeSound"> Mistake sound</label>
+<h3>🏆 Certificate</h3>
+<div id="certificate" style="margin-top:10px;padding:20px;border:2px solid var(--gold);border-radius:12px;background:var(--surface);display:none"></div>
 <h2>Free Hindi and English typing practice</h2>
 <p>Typing Studio is a free typing practice tool where you choose the text. Paste a passage or upload a .txt file, pick a timer and start typing. It supports Hindi with the Mangal font and the Remington Gail layout, plus English, and it scores your work the way many exam typing tests do: by words, with full and half mistakes.</p>
 <h2>How it works</h2>
@@ -245,7 +274,6 @@ main{max-width:1040px}
 <details><summary>What is exam mode?</summary><p>Exam mode turns off backspace and live marks and shows your result only at the end, like a real typing test.</p></details>
 <p>More: <a href="faq.html">full FAQ</a> &middot; <a href="articles.html">typing articles</a> &middot; <a href="guide.html">Hindi typing guide</a> &middot; <a href="passages.html">practice passages</a></p>
 </section>
-<p class="foot"><a href="index.html">Home</a><a href="articles.html">Articles</a><a href="passages.html">Passages</a><a href="guide.html">Guide</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
 </main>
 <script src="passages.js"></script>
 <script>
@@ -399,6 +427,8 @@ function drawHist(){
 }
 function finish(){
   finished=true;clearInterval(timer);finalEl=Math.min(start?((pausedAt||Date.now())-start)/1000:0,limit||1e9);stats();
+  playSuccessSound();
+  generateCertificate();
   $('inp').disabled=true;
   const d=$('done'),raw=$('inp').value,typedLog=useVis?toLog(raw):raw;
   const tw=wsplit(typedLog),m=tw.length,RW=wsplit(T.join('')).slice(0,m+Math.ceil(m*.25)+10);
@@ -460,7 +490,10 @@ $('inp').addEventListener('keydown',e=>{
   for(const [x,y] of COMP){if(v.endsWith(x)){v=v.slice(0,-x.length)+y;composed=true;break}}
   $('inp').value=v;onInput();
 });
-$('inp').addEventListener('input',onInput);
+$('inp').addEventListener('input',function(){
+  playKeySound();
+  onInput();
+});
 $('inp').addEventListener('compositionstart',()=>composing=true);
 $('inp').addEventListener('compositionend',()=>{composing=false;onInput()});
 $('inp').addEventListener('keydown',e=>{
@@ -548,6 +581,108 @@ function drawLib(){
   el.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>pickP(b.dataset.g,true));
 }
 drawLib();
+
+// Sound Effects
+const soundEnabled=document.getElementById('soundEnabled');
+const mistakeSound=document.getElementById('mistakeSound');
+let audioCtx=null;
+function playSound(frequency,duration=50,type='square'){
+  if(!soundEnabled||!soundEnabled.checked)return;
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.connect(gain);gain.connect(audioCtx.destination);
+    osc.frequency.value=frequency;osc.type=type;
+    gain.gain.setValueAtTime(0.1,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+duration/1000);
+    osc.start();osc.stop(audioCtx.currentTime+duration/1000);
+  }catch(e){}
+}
+function playKeySound(){
+  playSound(800,30,'sine');
+}
+function playMistakeSound(){
+  if(mistakeSound&&mistakeSound.checked)playSound(200,100,'sawtooth');
+}
+function playSuccessSound(){
+  playSound(600,100,'sine');
+  setTimeout(()=>playSound(800,100,'sine'),100);
+}
+
+// Typing Games
+function startTypingGame(){
+  const games=['The quick brown fox jumps over the lazy dog.','Practice makes perfect when it comes to typing.','Speed is important but accuracy matters more.','Keep your eyes on the text and let your fingers find the keys.','Typing is a skill that improves with daily practice.'];
+  const text=games[Math.floor(Math.random()*games.length)];
+  $('src').value=text;
+  $('tm').value='1';
+  $('mode').value='practice';
+  $('start').onclick();
+  $('msg').textContent='⚡ Speed Test: Type as fast as you can for 1 minute!';
+}
+function startAccuracyGame(){
+  const text='The quick brown fox jumps over the lazy dog. Regular practice builds speed, and accuracy matters more than speed in the beginning.';
+  $('src').value=text;
+  $('tm').value='2';
+  $('mode').value='exam';
+  $('start').onclick();
+  $('msg').textContent='🎯 Accuracy Challenge: No backspace! Type perfectly.';
+}
+function startEnduranceGame(){
+  const text='Typing is a skill that improves with daily practice. Keep your eyes on the text, rest your wrists lightly, and look at the text rather than the keys. When you make a mistake, do not rush to hide it. Slow down for a moment, find the pattern, and try again. Regular practice builds speed, and accuracy matters more than speed in the beginning.';
+  $('src').value=text;
+  $('tm').value='10';
+  $('mode').value='practice';
+  $('start').onclick();
+  $('msg').textContent='💪 Endurance Mode: Type for 10 minutes straight!';
+}
+
+// Certificate Generator
+function generateCertificate(){
+  const history=loadH();
+  if(!history.length){alert('Complete a typing test first!');return}
+  const best=Math.max(...history.map(r=>r.net||0));
+  const total=history.reduce((s,r)=>s+(r.net||0),0);
+  const avg=Math.round(total/history.length);
+  const cert=document.getElementById('certificate');
+  cert.style.display='block';
+  cert.innerHTML='<div style="text-align:center;padding:20px"><h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;color:var(--gold)">Certificate of Achievement</h2><p style="font-size:1.2rem">This certifies that</p><h3 style="font-size:1.5rem;color:var(--ink)">'+(new Date().toLocaleDateString())+'</h3><p>has completed '+history.length+' typing tests with an average of '+avg+' WPM</p><p style="color:var(--mute);font-size:.9rem">Best score: '+best+' WPM</p><button class="cta" onclick="downloadCertificate()">Download</button></div>';
+}
+function downloadCertificate(){
+  const cert=document.getElementById('certificate');
+  const html='<!DOCTYPE html><html><head><style>body{font-family:serif;text-align:center;padding:50px}h1{color:#a67c1a}</style></head><body>'+cert.innerHTML+'</body></html>';
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='certificate.html';a.click();
+}
+
+// Leaderboard
+function showLeaderboard(){
+  const history=loadH();
+  if(!history.length){alert('No tests yet!');return}
+  const sorted=history.slice().sort((a,b)=>b.net-a.net).slice(0,10);
+  let html='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:center;justify-content:center"><div style="background:var(--surface);padding:30px;border-radius:12px;max-width:500px;width:90%"><h2 style="color:var(--gold)">🏆 Leaderboard</h2><ol>';
+  sorted.forEach((r,i)=>{
+    html+='<li style="margin:10px 0;padding:8px;background:var(--bg);border-radius:6px">'+(i+1)+'. '+r.net+' WPM - '+r.acc+'% accuracy</li>';
+  });
+  html+='</ol><button class="cta" onclick="this.closest(\'div\').remove()">Close</button></div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+
+// Multiplayer
+function startMultiplayer(){
+  alert('Multiplayer mode coming soon! Race against other players in real-time.');
+}
+
+// Mobile App
+function installApp(){
+  if('serviceWorker' in navigator){
+    alert('Install this site as an app on your phone! Use your browser\'s "Add to Home Screen" feature.');
+  }else{
+    alert('Your browser does not support app installation.');
+  }
+}
 </script>
 </body>
 </html>
