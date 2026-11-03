@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Matter manager | Typing Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+.in{width:100%;font:inherit;font-size:.95rem;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:Inter,Mangal,"Noto Sans Devanagari",sans-serif}
+.in:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.18)}
+textarea.in{min-height:170px;line-height:1.7;resize:vertical}
+label.f{display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:14px 0 6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.btn{font:inherit;font-size:.82rem;font-weight:500;padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:all .15s}
+.btn:hover:not(:disabled){background:linear-gradient(135deg,#f6e4a6,#d4af37 55%,#a67c1a);color:#1b1405;border-color:transparent;transform:translateY(-1px)}
+.btn.main{background:linear-gradient(135deg,#f6e4a6,#d4af37 48%,#9a7413);color:#1b1405;border:0;font-weight:600}
+.btn.del:hover:not(:disabled){background:rgba(255,90,110,.18);color:#e05a6b;border:1px solid #e05a6b}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.item{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+.item small{color:var(--mute);display:block}
+.item .acts{display:flex;gap:6px;flex-wrap:wrap}.item .acts .btn{padding:6px 12px;font-size:.74rem}
+.status{padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.status.dirty{border-color:var(--gold)}
+.msg{color:var(--mute);font-size:.88rem;margin-top:8px}.err{color:#e05a6b}
+ol.steps li{margin:6px 0}
+</style></head><body><div class="wrap">
+<header class="top"><a class="brand" href="index.html">Typing Studio</a><nav><a href="typing.html">Typing tool</a></nav></header>
+<main class="doc">
+<h1>Matter manager</h1>
+<p class="lead">Add, edit and organise the ready-made matter. Nothing goes live until you upload the downloaded files to GitHub.</p>
+
+<div id="status" class="status"></div>
+<div class="row">
+  <button class="btn main" id="dlJs" type="button">Download passages.js</button>
+  <button class="btn main" id="dlHtml" type="button">Download passages.html</button>
+  <button class="btn" id="copyJs" type="button">Copy passages.js</button>
+  <button class="btn del" id="reset" type="button">Reset to published</button>
+</div>
+<div id="out" class="msg"></div>
+
+<div class="card">
+  <h2 id="formTitle" style="margin-top:0">Add new matter</h2>
+  <label class="f" for="title">Title</label>
+  <input class="in" id="title" type="text" maxlength="80" placeholder="e.g. Tree plantation">
+  <label class="f" for="lang">Language</label>
+  <select class="in" id="lang"><option value="auto">Detect automatically</option><option value="hi">Hindi</option><option value="en">English</option></select>
+  <label class="f" for="text">Matter</label>
+  <textarea class="in" id="text" placeholder="Paste or type the matter here"></textarea>
+  <div class="msg" id="count">0 words</div>
+  <div class="row">
+    <label class="msg" style="margin:0"><input type="checkbox" id="keepNl"> Keep line breaks (otherwise the matter becomes one paragraph)</label>
+  </div>
+  <div class="row">
+    <button class="btn main" id="save" type="button">Add matter</button>
+    <button class="btn" id="cancel" type="button" hidden>Cancel editing</button>
+  </div>
+  <div id="formMsg" class="msg"></div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Add many at once</h2>
+  <p class="msg">Choose one or more .txt files. Each file becomes one matter, and the file name becomes the title.</p>
+  <input type="file" id="files" accept=".txt,text/plain" multiple>
+  <div id="impMsg" class="msg"></div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Your matter <span id="n" style="font-size:1rem;color:var(--mute)"></span></h2>
+  <div id="list"></div>
+</div>
+
+<h2>How to publish your changes</h2>
+<ol class="steps">
+<li>Click <b>Download passages.js</b>. This updates the list on the typing page.</li>
+<li>Click <b>Download passages.html</b>. This updates the public Passages page. (It works when you open this page from your live site.)</li>
+<li>In your GitHub repository, upload both files and choose <b>Commit changes</b>. They replace the old ones.</li>
+<li>Vercel redeploys in about 30 seconds. Press Ctrl+F5 on the site to see the new matter.</li>
+</ol>
+<p class="msg">Your edits are kept in this browser until you reset them, so you can close the page and come back. This page is not linked anywhere on the site and is hidden from search engines, but anyone with the address can open it. They cannot publish anything, because only you can upload to GitHub.</p>
+</main></div>
+<script src="passages.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const words=t=>t.trim().split(/\s+/).filter(Boolean).length;
+const clone=a=>a.map(p=>({id:p.id,lang:p.lang,title:p.title,text:p.text}));
+const pub=clone(window.PASSAGES||[]);
+let list=null;try{list=JSON.parse(localStorage.getItem('admin-draft')||'null')}catch(e){}
+if(!Array.isArray(list))list=clone(pub);
+let editing=-1,pendingDel=-1;
+const HEADER="/* READY-MADE MATTER\n   Created with the Matter manager page (admin.html).\n   Each entry: id (unique), lang ('hi' or 'en'), title, text.\n   You can still edit this file by hand if you prefer. */\n";
+
+function norm(t){
+  if($('keepNl')&&$('keepNl').checked)return t.replace(/\r\n?/g,'\n').split('\n').map(l=>l.replace(/[ \t]+/g,' ').trim()).join('\n').replace(/\n{3,}/g,'\n\n').trim();
+  return t.replace(/\s+/g,' ').trim();
+}
+function detect(t){return /[\u0900-\u097F]/.test(t)?'hi':'en'}
+function nextId(){let m=0;list.forEach(p=>{const n=parseInt(String(p.id).replace(/\D/g,''),10);if(n>m)m=n});return 'p'+(m+1)}
+function jsText(){return HEADER+'window.PASSAGES=[\n'+list.map(p=>JSON.stringify({id:p.id,lang:p.lang,title:p.title,text:p.text})).join(',\n')+'\n];\n'}
+function cardsHtml(){return list.map(p=>'<div class="card"><h2 style="margin-top:0">'+esc(p.title)+' <span style="font-size:.8rem;color:var(--mute);font-family:Inter,sans-serif">'+(p.lang==='hi'?'Hindi':'English')+' &middot; '+words(p.text)+' words</span></h2><p>'+esc(p.text).replace(/\n/g,'<br>')+'</p><button class="cta" style="border:0;cursor:pointer" data-t="'+esc(p.text)+'" onclick="go(this)">Practise this passage</button></div>').join('\n')}
+function patchHtml(html){
+  if(!/<!-- CARDS-START -->[\s\S]*<!-- CARDS-END -->/.test(html))return null;
+  const rep='<!-- CARDS-START -->\n'+cardsHtml()+'\n<!-- CARDS-END -->';
+  return html.replace(/<!-- CARDS-START -->[\s\S]*<!-- CARDS-END -->/,()=>rep);
+}
+function dirty(){return JSON.stringify(list)!==JSON.stringify(pub)}
+function persist(){try{localStorage.setItem('admin-draft',JSON.stringify(list))}catch(e){}render()}
+
+function render(){
+  const d=dirty();
+  $('status').className='status'+(d?' dirty':'');
+  $('status').innerHTML=d?'<b>You have unpublished changes.</b> Download the files below and upload them to GitHub to make them live.':'<b>Everything here matches the published site.</b>';
+  $('n').textContent='('+list.length+')';
+  $('list').innerHTML=list.length?list.map((p,i)=>'<div class="item"><div><b>'+(i+1)+'. '+esc(p.title)+'</b><small>'+(p.lang==='hi'?'Hindi':'English')+' &middot; '+words(p.text)+' words</small></div><div class="acts"><button class="btn" data-a="up" data-i="'+i+'"'+(i===0?' disabled':'')+'>Up</button><button class="btn" data-a="down" data-i="'+i+'"'+(i===list.length-1?' disabled':'')+'>Down</button><button class="btn" data-a="try" data-i="'+i+'">Try it</button><button class="btn" data-a="edit" data-i="'+i+'">Edit</button><button class="btn del" data-a="del" data-i="'+i+'">'+(pendingDel===i?'Confirm?':'Delete')+'</button></div></div>').join(''):'<p class="msg">No matter yet. Add your first one above.</p>';
+  document.querySelectorAll('#list [data-a]').forEach(b=>b.onclick=()=>act(b.dataset.a,+b.dataset.i));
+}
+function act(a,i){
+  if(a!=='del')pendingDel=-1;
+  if(a==='up'&&i>0){[list[i-1],list[i]]=[list[i],list[i-1]];persist()}
+  else if(a==='down'&&i<list.length-1){[list[i+1],list[i]]=[list[i],list[i+1]];persist()}
+  else if(a==='try'){try{localStorage.setItem('typing-prefill',list[i].text)}catch(e){}window.open('typing.html','_blank')}
+  else if(a==='edit'){editing=i;$('title').value=list[i].title;$('lang').value=list[i].lang;$('text').value=list[i].text;$('keepNl').checked=list[i].text.indexOf('\n')>-1;$('formTitle').textContent='Edit matter';$('save').textContent='Save changes';$('cancel').hidden=false;count();$('title').scrollIntoView({behavior:'smooth',block:'center'})}
+  else if(a==='del'){if(pendingDel===i){list.splice(i,1);pendingDel=-1;if(editing===i)clearForm();persist()}else{pendingDel=i;render()}}
+}
+function count(){$('count').textContent=words($('text').value)+' words'}
+function clearForm(){editing=-1;$('title').value='';$('text').value='';$('lang').value='auto';$('formTitle').textContent='Add new matter';$('save').textContent='Add matter';$('cancel').hidden=true;count()}
+function saveForm(){
+  const title=$('title').value.trim(),text=norm($('text').value),m=$('formMsg');m.className='msg';
+  if(!title){m.className='msg err';m.textContent='Please enter a title.';return}
+  if(text.length<20){m.className='msg err';m.textContent='The matter is too short. Please add at least a sentence.';return}
+  const lang=$('lang').value==='auto'?detect(text):$('lang').value;
+  if(editing>=0){list[editing]={id:list[editing].id,lang,title,text};m.textContent='Changes saved.'}
+  else{list.push({id:nextId(),lang,title,text});m.textContent='Added. Remember to download and upload the files.'}
+  clearForm();persist();
+}
+function download(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:type+';charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+
+$('text').addEventListener('input',count);
+$('save').onclick=saveForm;$('cancel').onclick=clearForm;
+$('dlJs').onclick=()=>{download('passages.js',jsText(),'text/javascript');$('out').textContent='passages.js downloaded.'};
+$('copyJs').onclick=()=>{navigator.clipboard.writeText(jsText()).then(()=>{$('out').textContent='Copied. You can paste it into passages.js on GitHub.'},()=>{$('out').textContent='Could not copy. Use the download button instead.'})};
+$('dlHtml').onclick=async()=>{
+  try{
+    const r=await fetch('passages.html',{cache:'no-store'});if(!r.ok)throw 0;
+    const out=patchHtml(await r.text());
+    if(!out){$('out').className='msg err';$('out').textContent='The current passages.html has no CARDS markers, so it cannot be updated automatically.';return}
+    download('passages.html',out,'text/html');$('out').className='msg';$('out').textContent='passages.html downloaded.';
+  }catch(e){$('out').className='msg err';$('out').textContent='Could not read passages.html. Open this Matter manager from your live site (not from a file on your computer) to generate it.'}
+};
+$('reset').onclick=()=>{const b=$('reset');if(b.dataset.s){list=clone(pub);try{localStorage.removeItem('admin-draft')}catch(e){}b.dataset.s='';b.textContent='Reset to published';clearForm();render()}else{b.dataset.s='1';b.textContent='Click again to confirm'}};
+$('files').onchange=async e=>{
+  const fs=[...e.target.files];let added=0;
+  for(const f of fs){
+    const text=norm(await f.text());if(text.length<20)continue;
+    list.push({id:nextId(),lang:detect(text),title:f.name.replace(/\.[^.]+$/,''),text});added++;
+  }
+  $('impMsg').textContent=added+' of '+fs.length+' file(s) added.';e.target.value='';persist();
+};
+render();count();
+</script></body></html>
